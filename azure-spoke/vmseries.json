@@ -2,12 +2,6 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "hubName": {
-            "type": "string",
-            "metadata": {
-                "description": "Name of the hub which is managing the VMSS"
-            }
-        },
         "vmssName": {
             "type": "string",
             "metadata": {
@@ -216,7 +210,7 @@
             "location": "[resourceGroup().location]",
             "apiVersion": "2017-03-30",
             "tags": {
-                "PanoramaManaged": "[parameters('hubName')]"
+                "PanoramaManaged": "yes"
             },
             "sku": {
                 "name": "[parameters('vmSize')]",

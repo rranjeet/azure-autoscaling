@@ -2,25 +2,6 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "hubResourceGroupName": {
-            "type": "string",
-            "metadata": {
-                "description": "Resource group name of the Hub"
-            }
-        },
-        "hubVnetName": {
-            "type": "string",
-            "defaultValue": "hub-vnet",
-            "metadata": {
-                "description": "VN Name of the VNet where the hub resides"
-            }
-        },
-        "hubLoadBalancerIP": {
-            "type": "string",
-            "metadata": {
-                "description": "IP Address of the outbound Load Balancer in the hub"
-            }
-        },
         "networkSecurityGroupInboundSrcIP": {
             "type": "string",
              "metadata": {
@@ -28,11 +9,17 @@
              },
              "defaultValue": "1.1.1.1/32"
         },
+        "appLoadBalancerIP": {
+            "type": "string",
+            "metadata": {
+                "description": "IP Address of the Load Balancer fronting the application"
+            }
+        },
         "virtualNetworkName": {
             "type": "string",
-            "defaultValue": "spoke-vnet",
+            "defaultValue": "inbound-fw-vnet",
             "metadata": {
-                "description": "Virtual Network Name"
+                "description": "Inbound Firewall Virtual Network Name"
             }
         },
         "virtualNetworkAddressPrefix": {
@@ -254,16 +241,13 @@
         "trustedSubnetName" : "[concat(parameters('virtualNetworkName'), '-trust-subnet')]",
         "backendSubnetName" : "[concat(parameters('virtualNetworkName'), '-backend-subnet')]",
         "appGatewaySubnetName" : "[concat(parameters('virtualNetworkName'), '-appgw-subnet')]",
-        "internalLoadBalancerName" : "myPrivateLB",
         "LoadBalancerType" : "layer-7",
         "firewallVmCount" : 2,
-        "baseUrl" : "https://raw.githubusercontent.com/PaloAltoNetworks/Azure-Transit-VNet/master/Azure-Transit-VNET-1.1/azure-spoke",
+        "baseUrl" : "https://raw.githubusercontent.com/rranjeet/azure-autoscaling/master/azure-spoke",
         "nsgURL" : "[concat(variables('baseUrl'),'/nsg-new.json')]",
         "vnetURL" : "[concat(variables('baseUrl'),'/deployVnet.json')]",
         "publicLBURL" : "[concat(variables('baseUrl'),'/public-lb-', variables('LoadBalancerType'), '.json')]",
-        "privateLBURL" : "[concat(variables('baseUrl'),'/private-lb-', parameters('authenticationType'),'.json')]",
         "storageAccountSetupURL" : "[concat(variables('baseUrl'),'/deployStorage.json')]",
-        "vnetPeeringURL": "[concat(variables('baseUrl'), '/deployVnetPeering.json')]",
         "defaultUdrSetupURL": "[concat(variables('baseUrl'), '/deployDefaultUDR.json')]",
         "vmseriesURL" : "[concat(variables('baseUrl'),'/vmseries.json')]",
         "appInsightsApiVersion": "2018-05-01", 
@@ -345,7 +329,7 @@
                          "value": "0.0.0.0/0"
                     },
                     "nextHopIP": {
-                         "value": "[parameters('hubLoadBalancerIP')]"
+                         "value": "[parameters('appLoadBalancerIP')]"
                     }
                 }
             }
@@ -566,9 +550,6 @@
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
-                    "hubName": {
-                        "value": "[parameters('hubResourceGroupName')]"
-                    },
                     "vmssName": {
                         "value": "[variables('vmssName')]"
                     },
@@ -625,86 +606,8 @@
                     }
                 }
              }
-         },
-         {
-            "name": "SetupInternalLoadBalancer",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2015-01-01",
-            "dependsOn": [
-                "Microsoft.Resources/deployments/SetupVNET",
-                "Microsoft.Resources/deployments/SetupVMSeries"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('privateLBURL')]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "storageAccountName": {
-                         "value": "[reference('SettingUpStorageAccount').outputs.sid.value]"
-                    },
-                    "virtualNetworkName": {
-                         "value": "[reference('SetupVNET').outputs.vnetName.value]"
-                    },
-                    "virtualNetworkExistingRGName": {
-                         "value": "[variables('rgname')]"
-                    },
-                    "lbName": {
-                         "value": "[variables('internalLoadBalancerName')]"
-                    },
-                    "adminUsername": {
-                         "value": "[parameters('username')]"
-                    },
-                    "adminPassword": {
-                         "value": "[parameters('password')]"
-                    },
-                    "sshKey": {
-                         "value": "[parameters('sshPublicKey')]"
-                    },
-                    "subnetName": {
-                         "value": "[variables('backendSubnetName')]"
-                    },
-                    "frontendSubnetName": {
-                         "value": "[variables('trustedSubnetName')]"
-                    },
-                    "vmSize": {
-                         "value": "[parameters('backendVmSize')]"
-                    },
-                    "baseUrl": {
-                         "value": "[variables('baseUrl')]"
-                    }
-                }
-             }
-        },
-        {
-            "name": "SetupVNetPeering",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2017-05-10",
-            "dependsOn": [
-                "Microsoft.Resources/deployments/SetupVNET",
-                "Microsoft.Resources/deployments/SetupVMSeries"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('vnetPeeringURL')]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "vNet1Name": {
-                         "value": "[parameters('virtualNetworkName')]"
-                    },
-                    "vNet2Name": {
-                         "value": "[parameters('hubVnetName')]"
-                    },
-                    "vNet2ResourceGroupName": {
-                         "value": "[parameters('hubResourceGroupName')]"
-                    }
-                }
-             }
-        }
-    ],
+           }
+        ],
     "outputs": {
     }
 }
