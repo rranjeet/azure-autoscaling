@@ -57,35 +57,35 @@
     },
     "subnet0Prefix": {
       "type": "string",
-      "defaultValue": "192.168.0.0/24",
+      "defaultValue": "None",
       "metadata": {
         "description": "Mgmt subnet CIDR"
       }
     },
     "subnet1Prefix": {
       "type": "string",
-      "defaultValue": "192.168.1.0/24",
+      "defaultValue": "None",
       "metadata": {
         "description": "Untrust subnet CIDR"
       }
     },
     "subnet2Prefix": {
       "type": "string",
-      "defaultValue": "192.168.2.0/24",
+      "defaultValue": "None",
       "metadata": {
         "description": "Trust subnet CIDR"
       }
     },
     "subnetLBPrefix": {
       "type": "string",
-      "defaultValue": "192.168.3.0/24",
+      "defaultValue": "None",
       "metadata": {
         "description": "App Gateway CIDR"
       }
     },
     "subnetWWWPrefix": {
       "type": "string",
-      "defaultValue": "192.168.4.0/24",
+      "defaultValue": "None",
       "metadata": {
         "description": "backend WWW CIDR"
       }
