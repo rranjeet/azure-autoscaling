@@ -103,6 +103,7 @@
     "subnetWWWRef": "[concat(variables('vnetID'),'/subnets/',parameters('subnetWWWName'))]",
     "subnets": [
       {
+        "condition": "[not(equals(parameters('subnet0Prefix'), 'None'))]",
         "name": "[parameters('subnet0Name')]",
         "properties": {
           "addressPrefix": "[if(equals(parameters('subnet0Prefix'), 'None'), json('null'), parameters('subnet0Prefix'))]",
@@ -112,6 +113,7 @@
         }
       },
       {
+        "condition": "[not(equals(parameters('subnet1Prefix'), 'None'))]",
         "name": "[parameters('subnet1Name')]",
         "properties": {
           "addressPrefix": "[if(equals(parameters('subnet1Prefix'), 'None'), json('null'), parameters('subnet1Prefix'))]"
