@@ -105,7 +105,7 @@
       {
         "name": "[parameters('subnet0Name')]",
         "properties": {
-          "addressPrefix": "[parameters('subnet0Prefix')]",
+          "addressPrefix": "[if(equals(parameters('subnet0Prefix'), 'None'), json('null'), parameters('subnet0Prefix'))]",
           "networkSecurityGroup": {
               "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsgName'))]"
           }
@@ -114,13 +114,13 @@
       {
         "name": "[parameters('subnet1Name')]",
         "properties": {
-          "addressPrefix": "[parameters('subnet1Prefix')]"
+          "addressPrefix": "[if(equals(parameters('subnet1Prefix'), 'None'), json('null'), parameters('subnet1Prefix'))]"
         }
       },
       {
         "name": "[parameters('subnet2Name')]",
         "properties": {
-          "addressPrefix": "[parameters('subnet2Prefix')]"
+          "addressPrefix": "[if(equals(parameters('subnet2Prefix'), 'None'), json('null'), parameters('subnet2Prefix'))]"
         }
       },
       {

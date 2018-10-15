@@ -313,6 +313,7 @@
              }
         },
         {
+            "condition": "[equals(parameters('connectToHub'), 'Yes')]",
             "name": "SetupHubVNetPeering",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2017-05-10",
