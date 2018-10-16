@@ -66,10 +66,7 @@
       {
         "name": "[parameters('subnetWWWName')]",
         "properties": {
-          "addressPrefix": "[parameters('subnetWWWPrefix')]",
-          "routeTable": {
-            "id": "[resourceId('Microsoft.Network/routeTables', 'defaultBackendUDR')]"
-          }
+          "addressPrefix": "[parameters('subnetWWWPrefix')]"
         }
       }
     ]

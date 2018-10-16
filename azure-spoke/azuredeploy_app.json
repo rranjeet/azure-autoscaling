@@ -143,7 +143,7 @@
         "internalLoadBalancerName" : "myPrivateLB",
         "baseUrl" : "https://raw.githubusercontent.com/rranjeet/azure-autoscaling/master/azure-spoke",
         "nsgURL" : "[concat(variables('baseUrl'),'/nsg-new.json')]",
-        "vnetURL" : "[concat(variables('baseUrl'),'/deployVnet.json')]",
+        "appVnetURL" : "[concat(variables('baseUrl'),'/deployAppVnet.json')]",
         "privateLBURL" : "[concat(variables('baseUrl'),'/private-lb-password.json')]",
         "storageAccountSetupURL" : "[concat(variables('baseUrl'),'/deployStorage.json')]",
         "vnetPeeringURL": "[concat(variables('baseUrl'), '/deployVnetPeering.json')]",
@@ -208,13 +208,12 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2015-01-01",
             "dependsOn": [
-                "Microsoft.Resources/deployments/SetupNSG",
-                "Microsoft.Resources/deployments/SetupDefaultUDR"
+                "Microsoft.Resources/deployments/SetupNSG"
             ],
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[variables('vnetURL')]",
+                    "uri": "[variables('appVnetURL')]",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
@@ -227,13 +226,13 @@
                     "virtualNetworkAddressPrefix": {
                         "value": "[parameters('virtualNetworkAddressPrefix')]"
                     },
-                    "subnet0Name": {
+                    "subnetLBName": {
                          "value": "[variables('trustedSubnetName')]"
                     },
                     "subnetWWWName": {
                          "value": "[variables('backendSubnetName')]"
                     },
-                    "subnet0Prefix": {
+                    "subnetLBPrefix": {
                          "value": "[parameters('trustedSubnetPrefix')]"
                     },
                     "subnetWWWPrefix": {
