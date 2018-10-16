@@ -264,6 +264,12 @@
                                     "properties": {
                                         "subnet": {
                                             "id": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'), '/subnets/', parameters('subnetNameMgmt'))]"
+                                        },
+                                        "publicIPAddressConfiguration": {
+                                            "name": "pavm_pip",
+                                            "properties": {
+                                                "idleTimeoutInMinutes": 15
+                                            }
                                         }
                                     }
                                 }]
