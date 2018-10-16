@@ -12,7 +12,13 @@
         "appLoadBalancerIP": {
             "type": "string",
             "metadata": {
-                "description": "IP Address of the Load Balancer fronting the application"
+                "description": "IP Address of the Internal Load Balancer fronting the application"
+            }
+        },
+        "fwLoadBalancerIP": {
+            "type": "string",
+            "metadata": {
+                "description": "IP Address of the Internal Load Balancer fronting the firewall"
             }
         },
         "virtualNetworkName": {
@@ -258,8 +264,10 @@
         "appInsightsUrl": "[concat(variables('baseUrl'),'/deployAppInsights.json')]",
         "nicNameWorker": "[concat('tempworkernic', variables('namingInfix'))]",
         "workerName": "[concat('tempworker', variables('namingInfix'))]",
-        "appGatewayName": "[concat(variables('rgname'), 'appgw', variables('namingInfix'))]",
-        "appGwBackendPoolName": "[concat(variables('rgname'), 'appGwBepool', variables('namingInfix'))]",
+        "appGatewayName": "[concat(variables('rgname'), '_appgw_', variables('namingInfix'))]",
+        "fwLbName": "[concat(variables('rgname'), '_fw_lb_', variables('namingInfix'))]", 
+        "appGwBackendPoolName": "[concat(variables('rgname'), '_appGwBepool_', variables('namingInfix'))]",
+        "fwLbBePoolName": "[concat(variables('rgname'), '_fw_lb_backend_pool_', variables('namingInfix'))]",
         "vmssName": "[concat('pavmfw', variables('namingInfix'))]",
         "customDataField": "[concat('storage-account=', parameters('bootstrapStorageAccount'), ',access-key=', parameters('bootstrapStorageAccountAccessKey'), ',file-share=', parameters('bootstrapFileShare'),',share-directory=', parameters('bootstrapSharedDir'))]",
         "space": " "
@@ -530,10 +538,50 @@
                     },
                     "appGwBackendPoolName": {
                         "value": "[variables('appGwBackendPoolName')]"
+                    },
+                    "appGwBackendPoolIP": {
+                        "value": "[variables('fwLoadBalancerIP')]"
                     }
                 }
             }
         },
+        {
+            "type": "Microsoft.Network/loadBalancers",
+            "sku": {
+                "name": "Standard",
+                "tier": "Regional"
+            },
+            "name": "[parameters('fwLbName')]",
+            "apiVersion": "2018-02-01",
+            "location": "[variables('location')]",
+            "properties": {
+                "frontendIPConfigurations": [
+                    {
+                        "name": "LoadBalancerFrontEnd",
+                        "properties": {
+                            "privateIPAddress": "[parameters('fwLoadBalancerIP')]",
+                            "privateIPAllocationMethod": "Static",
+                            "subnet": {
+                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), variables('untrustedSubnetName'))]"
+                            }
+                        }
+                    }
+                ],
+                "backendAddressPools": [
+                    {
+                        "name": "[variables('fwLbBePoolName')]"
+                    }
+                ],
+                "loadBalancingRules": [],
+                "probes": [],
+                "inboundNatRules": [],
+                "inboundNatPools": []
+            },
+            "dependsOn": [
+                "Microsoft.Resources/deployments/SetupPublicLoadBalancer"
+            ]
+        },
+
         {
             "name": "SetupVMSeries",
             "type": "Microsoft.Resources/deployments",
@@ -586,11 +634,11 @@
                     "subnetNameTrust": {
                         "value": "[variables('trustedSubnetName')]"
                     },
-                    "appGwName": {
-                        "value": "[variables('appGatewayName')]"
+                    "fwLbName": {
+                        "value": "[variables('fwLbName')]"
                     },
-                    "appGwBePoolName": {
-                        "value": "[variables('appGwBackendPoolName')]"
+                    "fwLbBePoolName": {
+                        "value": "[variables('fwLbBePoolName')]"
                     },
                     "appInsightsName": {
                         "value": "[variables('appInsightsName')]"

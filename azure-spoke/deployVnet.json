@@ -126,16 +126,16 @@
       {
         "name": "[parameters('subnetLBName')]",
         "properties": {
-          "addressPrefix": "[parameters('subnetLBPrefix')]"
+          "addressPrefix": "[parameters('subnetLBPrefix')]",
+          "routeTable": {
+            "id": "[resourceId('Microsoft.Network/routeTables', 'defaultBackendUDR')]"
+          }
         }
       },
       {
         "name": "[parameters('subnetWWWName')]",
         "properties": {
-          "addressPrefix": "[parameters('subnetWWWPrefix')]",
-          "routeTable": {
-            "id": "[resourceId('Microsoft.Network/routeTables', 'defaultBackendUDR')]"
-          }
+          "addressPrefix": "[parameters('subnetWWWPrefix')]"
         }
       }
     ]

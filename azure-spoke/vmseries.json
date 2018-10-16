@@ -107,13 +107,13 @@
                 "description": "Trust Subnet name"
             }
         },
-        "appGwName": {
+        "fwLbName": {
             "type": "string",
             "metadata": {
                 "description": "Application Gateway Name"
             }
         },
-        "appGwBePoolName": {
+        "fwLbBePoolName": {
             "type": "string",
             "metadata": {
                 "description": "Application Gateway Backend Pool Name"
@@ -279,6 +279,7 @@
                             "name": "[variables('nicNameUntrust')]",
                             "properties": {
                                 "primary": "false",
+                                "enableIPForwarding": "true",
                                 "ipConfigurations": [
                                 {
                                     "name": "[variables('ipConfigNameuntrust')]",
@@ -286,9 +287,9 @@
                                         "subnet": {
                                             "id": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'), '/subnets/', parameters('subnetNameUntrust'))]"
                                         },
-                                        "ApplicationGatewayBackendAddressPools": [
+                                        "loadBalancerBackendAddressPools": [
                                         {
-                                            "id": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/applicationGateways/', parameters('appGwName'), '/backendAddressPools/', parameters('appGwBePoolName'))]"
+                                            "id": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/loadBalancers/', parameters('fwLbName'), '/backendAddressPools/', parameters('fwLbBePoolName'))]"
                                         }]
                                     }
                                 }]
@@ -298,6 +299,7 @@
                             "name": "[variables('nicNameTrust')]",
                             "properties": {
                                 "primary": "false",
+                                "enableIPForwarding": "true",
                                 "ipConfigurations": [
                                 {
                                     "name": "[variables('ipConfigNametrust')]",
