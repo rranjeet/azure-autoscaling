@@ -540,7 +540,7 @@
                         "value": "[variables('appGwBackendPoolName')]"
                     },
                     "appGwBackendPoolIP": {
-                        "value": "[variables('fwLoadBalancerIP')]"
+                        "value": "[parameters('fwLoadBalancerIP')]"
                     }
                 }
             }
@@ -551,7 +551,7 @@
                 "name": "Standard",
                 "tier": "Regional"
             },
-            "name": "[parameters('fwLbName')]",
+            "name": "[variables('fwLbName')]",
             "apiVersion": "2018-02-01",
             "location": "[variables('location')]",
             "properties": {

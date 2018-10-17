@@ -208,7 +208,7 @@
             "type": "Microsoft.Compute/virtualMachineScaleSets",
             "name": "[parameters('vmssName')]",
             "location": "[resourceGroup().location]",
-            "apiVersion": "2017-03-30",
+            "apiVersion": "2017-12-01",
             "tags": {
                 "PanoramaManaged": "yes"
             },
