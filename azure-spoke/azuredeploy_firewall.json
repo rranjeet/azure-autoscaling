@@ -337,7 +337,7 @@
                          "value": "0.0.0.0/0"
                     },
                     "nextHopIP": {
-                         "value": "[parameters('appLoadBalancerIP')]"
+                         "value": "[parameters('fwLoadBalancerIP')]"
                     }
                 }
             }
@@ -540,7 +540,7 @@
                         "value": "[variables('appGwBackendPoolName')]"
                     },
                     "appGwBackendPoolIP": {
-                        "value": "[parameters('fwLoadBalancerIP')]"
+                        "value": "[parameters('appLoadBalancerIP')]"
                     }
                 }
             }
