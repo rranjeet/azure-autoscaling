@@ -48,7 +48,7 @@
     },
     "repoURL": {
       "type": "string",
-      "defaultValue": "https://github.com/AzureBytes/functionshttpecho.git",
+      "defaultValue": "https://github.com/rranjeet/azure",
       "metadata": {
         "description": "The URL for the GitHub repository that contains the project to deploy."
       }
