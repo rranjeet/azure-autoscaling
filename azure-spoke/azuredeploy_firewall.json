@@ -334,7 +334,7 @@
                 },
                 "parameters": {
                     "subnetPrefix": {
-                         "value": "0.0.0.0/0"
+                         "value": "[concat(parameters('appLoadBalancerIP'), '/32')]"
                     },
                     "nextHopIP": {
                          "value": "[parameters('fwLoadBalancerIP')]"
