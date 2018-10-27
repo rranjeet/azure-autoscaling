@@ -67,47 +67,40 @@
                 "description": "Name of the Service bus that will be used to communicate with Panorama."
             }
         }
-
     },
     "variables": {
         "location" : "[resourceGroup().location]",
         "functionAppName": "[parameters('appName')]",
         "hostingPlanName": "[concat(parameters('appName'), '-plan')]",
         "storageAccountName": "[concat(uniquestring(resourceGroup().id), 'functions')]",
-        "RootManageSharedAccessKey_name": "RootManageSharedAccessKey"
+        "RootManageSharedAccessKey_name": "RootManageSharedAccessKey",
+        "serviceBusApiVersion": "2017-04-01",
+        "baseUrl" : "https://raw.githubusercontent.com/rranjeet/azure-autoscaling/master/infra/",
+        "serviceBusUrl": "[concat(variables('baseUrl'), 'deployServiceBus.json')]"
     },
     "resources": [
         {
-            "type": "Microsoft.ServiceBus/namespaces",
-            "sku": {
-                "name": "Basic",
-                "tier": "Basic"
-            },
-            "name": "[parameters('serviceBusName')]",
-            "apiVersion": "2017-04-01",
-            "location": "[variables('location')]",
-            "scale": null,
-            "properties": {
-                "serviceBusEndpoint": "[concat('https://', parameters('serviceBusName'),'.servicebus.windows.net:443/')]"
-            },
-            "dependsOn": []
-        },
-        {
-            "type": "Microsoft.ServiceBus/namespaces/AuthorizationRules",
-            "name": "[concat(parameters('serviceBusName'), '/', variables('RootManageSharedAccessKey_name'))]",
-            "apiVersion": "2017-04-01",
-            "location": "[variables('location')]",
-            "scale": null,
-            "properties": {
-                "rights": [
-                    "Listen",
-                    "Manage",
-                    "Send"
-                ]
-            },
-            "dependsOn": [
-                "[resourceId('Microsoft.ServiceBus/namespaces', parameters('serviceBusName'))]"
-            ]
+            "name": "SetupServiceBusNamespace",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "[variables('serviceBusApiVersion')]",
+            "properties": { 
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('serviceBusUrl`')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "serviceBusNamespaceName": {
+                        "value": "[parameters('serviceBusName')]"
+                    },
+                    "serviceBusSku": {
+                        "value": "Basic"
+                    },
+                    "location": {
+                        "value": "[variables('location')]"
+                    }
+                }
+            }
         },
         {
             "type": "Microsoft.Storage/storageAccounts",
@@ -129,7 +122,10 @@
                 "workerSize": "[parameters('workerSize')]",
                 "hostingEnvironment": "",
                 "numberOfWorkers": 1
-            }
+            },
+            "dependsOn": [
+                "Microsoft.Resources/deployments/SetupServiceBusNamespace"
+            ]
         },
         {
             "apiVersion": "2015-08-01",
@@ -161,6 +157,14 @@
                         {
                             "name": "AzureWebJobsDashboard",
                             "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-05-01-preview').key1,';')]"
+                        },
+                        {
+                            "name": "PanServiceBusConnectionString",
+                            "value": "[reference('SetupServiceBusNamespace').outputs.NamespaceDefaultConnectionString.keys[0].value]"
+                        },
+                        {
+                            "name": "PanServiceBusSasPrimaryLey",
+                            "value": "[reference('SetupServiceBusNamespace').outputs.DefaultSharedAccessPolicyPrimaryKey.keys[0].value]"
                         }
                     ]
                 }
