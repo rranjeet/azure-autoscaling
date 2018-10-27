@@ -74,7 +74,7 @@
         "hostingPlanName": "[concat(parameters('appName'), '-plan')]",
         "storageAccountName": "[concat(uniquestring(resourceGroup().id), 'functions')]",
         "RootManageSharedAccessKey_name": "RootManageSharedAccessKey",
-        "serviceBusApiVersion": "2017-04-01",
+        "serviceBusApiVersion": "2018-09-01",
         "baseUrl" : "https://raw.githubusercontent.com/rranjeet/azure-autoscaling/master/infra/",
         "serviceBusUrl": "[concat(variables('baseUrl'), 'deployServiceBus.json')]"
     },
@@ -98,6 +98,9 @@
                     },
                     "location": {
                         "value": "[variables('location')]"
+                    },
+                    "apiVersion": {
+                        "value": "[variables('serviceBusApiVersion')]"
                     }
                 }
             }
