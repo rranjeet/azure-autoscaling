@@ -8,13 +8,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.ServiceBus;
 
-public class Message 
+public class PanMessage<T>
 {
     public string version {get; set;}
     public string status {get; set;}
     public string operation {get; set;}
-    public ScaleMessageContext context {get; set;}
-    
+    public T context {get; set;}
 }
 
 public class ScaleMessageContext 
@@ -56,30 +55,55 @@ public class ScaleMessageContext
 // Service Bus end point is read as an environment variable
 // For example - 
 // Endpoint=sb://pa-vm-autoscaling-servicebus7.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=VdBYi0jWRTjcKOhyg05x3/BPj7rlZYfg8xSe1o/yjlA= 
-
-static async Task SendMessage(string ConnectionString, string QueueName, string msg)
+static async Task<string> SendMessage(string ConnectionString, string QueueName, string msg, TraceWriter log)
 {
-     Microsoft.Azure.ServiceBus.Message sbMsg = new Microsoft.Azure.ServiceBus.Message(Encoding.UTF8.GetBytes(msg));
-     IQueueClient qClient = new QueueClient(ConnectionString, QueueName);
-     await qClient.SendAsync(sbMsg);
-     await qClient.CloseAsync();
+    string response = "Ok";
+    Microsoft.Azure.ServiceBus.Message sbMsg = new Microsoft.Azure.ServiceBus.Message(Encoding.UTF8.GetBytes(msg));
+    IQueueClient qClient = new QueueClient(ConnectionString, QueueName);;
+    try
+    {
+       await qClient.SendAsync(sbMsg); 
+    }
+    catch (Microsoft.Azure.ServiceBus.MessagingEntityNotFoundException e)
+    {
+        log.Info(QueueName + " subscription not found in Panorama configuration");
+        response = "QueueNotFound";
+    }
+    catch (System.Exception e)
+    {
+        log.Info("Exception " + e.ToString());
+    }
+    finally 
+    {
+        await qClient.CloseAsync();
+    }
+    return response;
 }
 
 public static HttpResponseMessage Run(HttpRequestMessage request, TraceWriter log)
 {
     string[] strServiceBusDelimiters = {";"};
-    log.Info("Received a HTTP Request.");
-
     string request_body = request.Content.ReadAsStringAsync().Result;
+    log.Info("Received a HTTP Request " + request_body);
+    string op = null;
 
-    Message msg = JsonConvert.DeserializeObject<Message>(request_body);
+    string [] req_lines = request_body.Split('\n');
+    foreach(string line in req_lines)
+    {
+        if (line.ToLower().Contains("operation"))
+        {
+            log.Info(line.ToLower().Split('=')[0]);
+            op = line.ToLower().Split(':')[1];
+            break;
+        }
+    }
+
+
+    PanMessage<ScaleMessageContext> msg = JsonConvert.DeserializeObject<PanMessage<ScaleMessageContext>>(request_body);
     log.Info(msg.context.ToString());
+
     var ServiceBusConnectionString =  Environment.GetEnvironmentVariable("PanServiceBusConnectionString", EnvironmentVariableTarget.Process);
     string QueueName = msg.context.subscriptionId;
-
-    SendMessage(ServiceBusConnectionString, QueueName, request_body).GetAwaiter().GetResult();
-    
-    return new HttpResponseMessage( HttpStatusCode.OK ) {Content =  new StringContent( "Your message here" ) };
-    
+    string result = SendMessage(ServiceBusConnectionString, QueueName, request_body, log).GetAwaiter().GetResult();
+    return new HttpResponseMessage( HttpStatusCode.OK ) {Content = new StringContent(result)};
 }
-
