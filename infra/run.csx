@@ -1,10 +1,12 @@
 #r "Microsoft.ServiceBus"
 
 using System.Net;
+
+using Newtonsoft.Json;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.ServiceBus;
+using Microsoft.Azure.ServiceBus;
 
 public class Message 
 {
@@ -12,6 +14,7 @@ public class Message
     public string status {get; set;}
     public string operation {get; set;}
     public ScaleMessageContext context {get; set;}
+    
 }
 
 public class ScaleMessageContext 
@@ -56,9 +59,9 @@ public class ScaleMessageContext
 
 static async Task SendMessage(string ConnectionString, string QueueName, string msg)
 {
-     var message = new Message(Encoding.UTF8.GetBytes(msg));
+     Microsoft.Azure.ServiceBus.Message sbMsg = new Microsoft.Azure.ServiceBus.Message(Encoding.UTF8.GetBytes(msg));
      IQueueClient qClient = new QueueClient(ConnectionString, QueueName);
-     await qClient.SendAsync(message);
+     await qClient.SendAsync(sbMsg);
      await qClient.CloseAsync();
 }
 
@@ -74,9 +77,9 @@ public static HttpResponseMessage Run(HttpRequestMessage request, TraceWriter lo
     var ServiceBusConnectionString =  Environment.GetEnvironmentVariable("PanServiceBusConnectionString", EnvironmentVariableTarget.Process);
     string QueueName = msg.context.subscriptionId;
 
-    SendMessage().GetAwaiter().GetResult();
+    SendMessage(ServiceBusConnectionString, QueueName, request_body).GetAwaiter().GetResult();
     
-    return new HttpResponseMessage(HttpStatusCode.OK) {Content =  new StringContent("200 HTTP OK")};
+    return new HttpResponseMessage( HttpStatusCode.OK ) {Content =  new StringContent( "Your message here" ) };
     
 }
 
