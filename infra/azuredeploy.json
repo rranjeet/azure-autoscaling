@@ -8,31 +8,6 @@
                 "description": "The name of the function app that you wish to create."
             }
         },
-        "sku": {
-            "type": "string",
-            "allowedValues": [
-                "Free",
-                "Shared",
-                "Basic",
-                "Standard"
-            ],
-            "defaultValue": "Free",
-            "metadata": {
-                "description": "The pricing tier for the hosting plan."
-            }
-        },
-        "workerSize": {
-            "type": "string",
-            "allowedValues": [
-                "0",
-                "1",
-                "2"
-            ],
-            "defaultValue": "0",
-            "metadata": {
-                "description": "The instance size of the hosting plan (small, medium, or large)."
-            }
-        },
         "storageAccountType": {
             "type": "string",
             "defaultValue": "Standard_LRS",
@@ -74,15 +49,17 @@
         "hostingPlanName": "[concat(parameters('appName'), '-plan')]",
         "storageAccountName": "[concat(uniquestring(resourceGroup().id), 'functions')]",
         "RootManageSharedAccessKey_name": "RootManageSharedAccessKey",
-        "serviceBusApiVersion": "2018-09-01",
+        "serviceBusApiVersion": "2014-09-01",
         "baseUrl" : "https://raw.githubusercontent.com/rranjeet/azure-autoscaling/master/infra/",
-        "serviceBusUrl": "[concat(variables('baseUrl'), 'deployServiceBus.json')]"
+        "serviceBusUrl": "[concat(variables('baseUrl'), 'deployServiceBus.json')]",
+        "functionHostingPlan": "Basic",
+        "workerSize": "0"
     },
     "resources": [
         {
             "name": "SetupServiceBusNamespace",
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "[variables('serviceBusApiVersion')]",
+            "apiVersion": "2018-09-01",
             "properties": { 
                 "mode": "Incremental",
                 "templateLink": {
@@ -94,7 +71,7 @@
                         "value": "[parameters('serviceBusName')]"
                     },
                     "serviceBusSku": {
-                        "value": "Basic"
+                        "value": "Standard"
                     },
                     "location": {
                         "value": "[variables('location')]"
@@ -121,8 +98,8 @@
             "location": "[variables('location')]",
             "properties": {
                 "name": "[variables('hostingPlanName')]",
-                "sku": "[parameters('sku')]",
-                "workerSize": "[parameters('workerSize')]",
+                "sku": "[variables('functionHostingPlan')]",
+                "workerSize": "[variables('workerSize')]",
                 "hostingEnvironment": "",
                 "numberOfWorkers": 1
             },
@@ -163,11 +140,7 @@
                         },
                         {
                             "name": "PanServiceBusConnectionString",
-                            "value": "[reference('SetupServiceBusNamespace').outputs.NamespaceDefaultConnectionString.keys[0].value]"
-                        },
-                        {
-                            "name": "PanServiceBusSasPrimaryLey",
-                            "value": "[reference('SetupServiceBusNamespace').outputs.DefaultSharedAccessPolicyPrimaryKey.keys[0].value]"
+                            "value": "[reference('SetupServiceBusNamespace').outputs.NamespaceDefaultConnectionString.value]"
                         }
                     ]
                 }

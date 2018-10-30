@@ -1,5 +1,10 @@
+#r "Microsoft.ServiceBus"
+
 using System.Net;
-using Newtonsoft.Json;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.ServiceBus;
 
 public class Message 
 {
@@ -7,7 +12,6 @@ public class Message
     public string status {get; set;}
     public string operation {get; set;}
     public ScaleMessageContext context {get; set;}
-    
 }
 
 public class ScaleMessageContext 
@@ -46,15 +50,33 @@ public class ScaleMessageContext
 }
 
 
+// Service Bus end point is read as an environment variable
+// For example - 
+// Endpoint=sb://pa-vm-autoscaling-servicebus7.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=VdBYi0jWRTjcKOhyg05x3/BPj7rlZYfg8xSe1o/yjlA= 
+
+static async Task SendMessage(string ConnectionString, string QueueName, string msg)
+{
+     var message = new Message(Encoding.UTF8.GetBytes(msg));
+     IQueueClient qClient = new QueueClient(ConnectionString, QueueName);
+     await qClient.SendAsync(message);
+     await qClient.CloseAsync();
+}
+
 public static HttpResponseMessage Run(HttpRequestMessage request, TraceWriter log)
 {
-    log.Info("C# HTTP trigger function processed a request.");
+    string[] strServiceBusDelimiters = {";"};
+    log.Info("Received a HTTP Request.");
 
     string request_body = request.Content.ReadAsStringAsync().Result;
 
     Message msg = JsonConvert.DeserializeObject<Message>(request_body);
     log.Info(msg.context.ToString());
+    var ServiceBusConnectionString =  Environment.GetEnvironmentVariable("PanServiceBusConnectionString", EnvironmentVariableTarget.Process);
+    string QueueName = msg.context.subscriptionId;
+
+    SendMessage().GetAwaiter().GetResult();
     
-    var greetingResponse = request.CreateResponse(HttpStatusCode.OK, "All is well"); 
-    return greetingResponse;
+    return new HttpResponseMessage(HttpStatusCode.OK) {Content =  new StringContent("200 HTTP OK")};
+    
 }
+
