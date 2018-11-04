@@ -235,6 +235,12 @@
              "metadata": {
                  "description": "Select the metric on which auto scale events should be triggered."
              } 
+        },
+        "vmLicenseHandlerUrl": {
+            "type": "string",
+            "metadata":{
+              "description": "Azure Function handler launched as part of the Service Bus template which handles VM licensing."
+            }
         }
     },
     "variables": {

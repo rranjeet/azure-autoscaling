@@ -154,6 +154,12 @@
             "metadata": {
                 "description": "The Threshold above which FW VM scale out kicks in."
             }
+        },
+        "vmLicenseHandlerUrl": {
+            "type": "string",
+            "metadata":{
+              "description": "Azure Function handler launched as part of the Service Bus template which handles VM licensing."
+            }
         }
     },
     "variables": {
@@ -170,7 +176,7 @@
         "imageOffer" : "vmseries1",
         "version" : "latest",
         "location": "[resourceGroup().location]",
-        "resourceGroupName": "[resourceGroup().name]", 
+        "resourceGroupName": "[resourceGroup().name]",
         "scaleMetricMap": {
             "Data Plane CPU Utilization %": {
                 "metricName": "customMetrics/DataPlaneCPUUtilizationPct", 
@@ -385,7 +391,12 @@
                         "sendToSubscriptionAdministrator": false,
                         "sendToSubscriptionCoAdministrators": false,
                         "customEmails": []
-                    }
+                    },
+                    "webhooks": [
+                        {
+                            "serviceUri": "[parameters('vmLicenseHandlerUrl')]" 
+                        }
+                    ]
                 }
                 ],
             "enabled": true,
