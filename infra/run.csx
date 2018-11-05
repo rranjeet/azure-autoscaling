@@ -7,6 +7,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.ServiceBus;
+using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.DataContracts;
+
 
 public class PanMessage<T>
 {
@@ -55,6 +58,7 @@ public class ScaleMessageContext
 // Service Bus end point is read as an environment variable
 // For example - 
 // Endpoint=sb://pa-vm-autoscaling-servicebus7.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=VdBYi0jWRTjcKOhyg05x3/BPj7rlZYfg8xSe1o/yjlA= 
+
 static async Task<string> SendMessage(string ConnectionString, string QueueName, string msg, TraceWriter log)
 {
      Microsoft.Azure.ServiceBus.Message sbMsg = new Microsoft.Azure.ServiceBus.Message(Encoding.UTF8.GetBytes(msg));
@@ -80,15 +84,39 @@ public static HttpResponseMessage Run(HttpRequestMessage request, TraceWriter lo
     log.Info("Received a HTTP Request " + request_body);
 
     string http_method = request.Method.ToString();
+    
 
     if (http_method == "GET")
     {
+        string[] metric_list = { 
+                        "panSessionActive",
+                        "DataPlaneCPUUtilizationPct",
+                        "panGPGatewayUtilizationPct",
+                        "panGPGWUtilizationActiveTunnels",
+                        "DataPlanePacketBufferUtilization",
+                        "panSessionSslProxyUtilization",
+                        "panSessionUtilization"
+                        };
         string instrumentationKey = request.GetQueryNameValuePairs()
         .FirstOrDefault(q => string.Compare(q.Key, "ik", true) == 0)
         .Value;
         log.Info("Instrumentation key " + instrumentationKey);
 
-        var template = @"{'$schema': 'https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#', 'contentVersion': '1.0.0.0', 'parameters': {}, 'variables': {}, 'resources': []}";
+        TelemetryClient telemetry_client = new TelemetryClient();
+        telemetry_client.Context.InstrumentationKey = instrumentationKey;
+
+        foreach (string metric_name in metric_list)
+        {
+            log.Info("Publishing metrics for " + metric_name);
+            var metric = new MetricTelemetry();
+            metric.Name = metric_name;
+            metric.Sum = 0;
+            telemetry_client.TrackMetric(metric);
+            telemetry_client.Flush();
+            System.Threading.Thread.Sleep(5000);
+        }
+        
+        string template = @"{'$schema': 'https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#', 'contentVersion': '1.0.0.0', 'parameters': {}, 'variables': {}, 'resources': []}";
         HttpResponseMessage myResponse = request.CreateResponse(HttpStatusCode.OK);
         myResponse.Content = new StringContent(template, System.Text.Encoding.UTF8, "application/json");
         return myResponse;
@@ -97,21 +125,27 @@ public static HttpResponseMessage Run(HttpRequestMessage request, TraceWriter lo
     if (http_method == "POST")
     {
         string [] req_lines = request_body.Split('\n');
+        bool op_found = false;
         foreach(string line in req_lines)
         {
             if (line.ToLower().Contains("operation"))
             {
-                log.Info(line);
+                op_found = true;
             }
         }
-
+        if (!op_found)
+        {
+            // Operation not found in the HTTP Post request. Return as invalid request
+            log.Error("Operation parameter not found in HTTP POST Request");
+            return new HttpResponseMessage(HttpStatusCode.BadRequest) {Content = new StringContent("Invalid request")};
+        }
         PanMessage<ScaleMessageContext> msg = JsonConvert.DeserializeObject<PanMessage<ScaleMessageContext>>(request_body);
         log.Info(msg.context.ToString());
 
         var ServiceBusConnectionString =  Environment.GetEnvironmentVariable("PanServiceBusConnectionString", EnvironmentVariableTarget.Process);
         string QueueName = msg.context.subscriptionId;
         string result = SendMessage(ServiceBusConnectionString, QueueName, request_body, log).GetAwaiter().GetResult();
-        return new HttpResponseMessage( HttpStatusCode.OK ) {Content = new StringContent(result)};
+        return new HttpResponseMessage(HttpStatusCode.OK) {Content = new StringContent(result)};
     }
 
     return new HttpResponseMessage(HttpStatusCode.BadRequest) {Content = new StringContent("Invalid request")};
