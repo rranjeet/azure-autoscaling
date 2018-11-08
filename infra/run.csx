@@ -113,7 +113,7 @@ public static HttpResponseMessage Run(HttpRequestMessage request, TraceWriter lo
             metric.Sum = 0;
             telemetry_client.TrackMetric(metric);
             telemetry_client.Flush();
-            System.Threading.Thread.Sleep(5000);
+            System.Threading.Thread.Sleep(50);
         }
         
         string template = @"{'$schema': 'https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#', 'contentVersion': '1.0.0.0', 'parameters': {}, 'variables': {}, 'resources': []}";
