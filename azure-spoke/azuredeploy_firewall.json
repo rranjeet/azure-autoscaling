@@ -297,11 +297,27 @@
             }
         },
         {
+            "name": "PublishCustomMetrics",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2016-06-01",
+            "dependsOn": [
+                "Microsoft.Resources/deployments/SetupAppInsights"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('vmLicenseHandlerUrl'), '&ik=', reference('SetupAppInsights').outputs.instrumentationKey.value)]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters":  {}
+            }
+        },
+        {
             "name": "SetupNSG",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2015-01-01",
             "dependsOn": [
-                "Microsoft.Resources/deployments/SetupAppInsights"
+                "Microsoft.Resources/deployments/PublishCustomMetrics"
             ],
             "properties": { 
                 "mode": "Incremental",
@@ -429,99 +445,11 @@
             }
         },
         {
-            "apiVersion": "[variables('networkApiVersion')]",
-            "type": "Microsoft.Network/networkInterfaces",
-            "name": "[variables('nicNameWorker')]",
-            "location": "[variables('location')]",
-            "dependsOn": [
-                "Microsoft.Resources/deployments/SetupVNET"
-            ],
-            "properties": {
-                "ipConfigurations": [{
-                    "name": "ipconfig-worker",
-                    "properties": {
-                        "privateIPAllocationMethod": "Dynamic",
-                        "subnet": {
-                            "id": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'), '/subnets/', variables('MgmtSubnetName'))]"
-                        }
-                    }
-                }]
-            }
-        },
-        {
-            "apiVersion": "[variables('computeApiVersion')]",
-            "type": "Microsoft.Compute/virtualMachines",
-            "name": "[variables('workerName')]",
-            "location": "[variables('location')]",
-            "dependsOn": [
-                "Microsoft.Resources/deployments/SetupVNET",
-                "Microsoft.Resources/deployments/SettingUpStorageAccount",
-                "[concat('Microsoft.Network/networkInterfaces/', variables('nicNameWorker'))]"
-            ],
-            "properties": {
-                "hardwareProfile": {
-                    "vmSize": "Standard_A1"
-                },
-                "osProfile": {
-                    "computername": "[variables('workerName')]",
-                    "adminUsername": "[parameters('username')]",
-                    "adminPassword": "[parameters('password')]"
-                },
-                "storageProfile": {
-                    "imageReference": {
-                        "publisher": "Canonical",
-                        "offer": "UbuntuServer",
-                        "sku": "16.04-LTS",
-                        "version": "latest"
-                    },
-                    "osDisk": {
-                        "name": "worker-osdisk",
-                        "vhd": {
-                            "uri": "[concat('https://', parameters('storageAccountName'), '.blob.core.windows.net/vhds/tempworker.vhd')]"
-                        },
-                        "caching": "ReadWrite",
-                        "createOption": "FromImage"
-                    }
-                },
-                "networkProfile": {
-                    "networkInterfaces": [
-                        {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('nicNameWorker'))]",
-                            "properties": { "primary": true}
-                        }
-                    ]
-                }
-            }
-        },
-        {
-            "name": "[concat(variables('workerName'),'/vm-customscript')]",
-            "type": "Microsoft.Compute/virtualMachines/extensions",
-            "apiVersion": "[variables('computeApiVersion')]",
-            "location": "[variables('location')]",
-            "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/', variables('workerName'))]"
-            ],
-            "properties":
-            {
-                "publisher": "Microsoft.Azure.Extensions",
-                "type": "CustomScript",
-                "typeHandlerVersion": "2.0",
-                "settings": {
-                    "fileUris": [
-                        "https://raw.githubusercontent.com/PaloAltoNetworks/Azure-Transit-VNet/master/Azure-Transit-VNET-1.1/azure-spoke/publish.py",
-                        "https://raw.githubusercontent.com/PaloAltoNetworks/Azure-Transit-VNet/master/Azure-Transit-VNET-1.1/azure-spoke/start.sh"
-                    ],
-                    "commandToExecute": "[concat('/bin/bash ./start.sh ', variables('space'), reference('SetupAppInsights').outputs.instrumentationKey.value, variables('space'), '&')]"
-                }
-            }
-        },
-        {
             "name": "SetupPublicLoadBalancer",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2015-01-01",
             "dependsOn": [
-                "Microsoft.Resources/deployments/SetupVNET",
-                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('workerName'),'vm-customscript')]"
+                "Microsoft.Resources/deployments/SetupVNET"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -620,15 +548,13 @@
                 "Microsoft.Resources/deployments/SetupPublicLoadBalancer"
             ]
         },
-
         {
             "name": "SetupVMSeries",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2015-01-01",
             "dependsOn": [
                 "Microsoft.Resources/deployments/SetupVNET",
-                "Microsoft.Resources/deployments/SetupPublicLoadBalancer",
-                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('workerName'),'vm-customscript')]"
+                "Microsoft.Resources/deployments/SetupPublicLoadBalancer"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -690,6 +616,9 @@
                     },
                     "scaleOutThreshold": {
                         "value": "[parameters('scaleOutThreshold')]"
+                    },
+                    "vmLicenseHandlerUrl": {
+                        "value": "[parameters('vmLicenseHandlerUrl')]"
                     }
                 }
              }
