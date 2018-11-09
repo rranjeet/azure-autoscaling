@@ -50,6 +50,12 @@
 			"metadata": {
 				"description": "IP Address of the inbound load balancer in the Trust network"
 			}
+		},
+		"fwLbBePoolName": {
+			"type": "string",
+			"metadata": {
+				"description": "Backend pool name of the load balancer"
+			}
 		}
 	},
 
@@ -83,7 +89,7 @@
 				],
 				"backendAddressPools": [
 					{
-						"name": "BackendPool"
+						"name": "[variables('fwLbBePoolName')]"
 					}
 				],
 				"loadBalancingRules": [
@@ -93,7 +99,7 @@
 								"id": "[concat(variables('lbId'), '/frontendIpConfigurations/Frontend')]"
 							},
 							"backendAddressPool": {
-								"id": "[concat(variables('lbId'), '/backendAddressPools/BackendPool')]"
+								"id": "[concat(variables('lbId'), '/backendAddressPools/', variables('fwLbBePoolName'))]"
 							},
 							"probe": {
 								"id": "[concat(variables('lbId'), '/probes/lbprobe')]"
