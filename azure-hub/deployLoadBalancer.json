@@ -89,7 +89,7 @@
 				],
 				"backendAddressPools": [
 					{
-						"name": "[variables('fwLbBePoolName')]"
+						"name": "[parameters('fwLbBePoolName')]"
 					}
 				],
 				"loadBalancingRules": [
@@ -99,7 +99,7 @@
 								"id": "[concat(variables('lbId'), '/frontendIpConfigurations/Frontend')]"
 							},
 							"backendAddressPool": {
-								"id": "[concat(variables('lbId'), '/backendAddressPools/', variables('fwLbBePoolName'))]"
+								"id": "[concat(variables('lbId'), '/backendAddressPools/', parameters('fwLbBePoolName'))]"
 							},
 							"probe": {
 								"id": "[concat(variables('lbId'), '/probes/lbprobe')]"
