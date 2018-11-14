@@ -85,6 +85,9 @@
             "name": "[variables('applicationGatewayName')]",
             "type": "Microsoft.Network/applicationGateways",
             "location": "[resourceGroup().location]",
+            "tags": {
+                "PanoramaManaged": "yes"
+            },
             "dependsOn": [
                 "[concat('Microsoft.Network/publicIPAddresses/', parameters('publicIPAddressName'))]"
             ],

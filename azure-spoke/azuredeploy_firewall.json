@@ -485,6 +485,9 @@
                 "name": "Standard",
                 "tier": "Regional"
             },
+            "tags": {
+                "PanoramaManaged": "yes"
+            },
             "name": "[variables('fwLbName')]",
             "apiVersion": "2018-02-01",
             "location": "[variables('location')]",

@@ -146,6 +146,9 @@
       "type": "Microsoft.Network/virtualNetworks",
       "location": "[variables('location')]",
       "apiVersion": "2015-06-15",
+      "tags": {
+          "PanoramaManaged": "yes"
+      },
       "properties": {
         "addressSpace": {
           "addressPrefixes": [
