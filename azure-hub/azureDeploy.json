@@ -283,7 +283,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[concat(parameters('vmLicenseHandlerUrl'), '&ik=', reference('SetupAppInsights').outputs.instrumentationKey.value)]",
+                    "uri": "[concat(parameters('vmLicenseHandlerUrl'), '&ik=', reference('SetupAppInsights').outputs.instrumentationKey.value), '&subsId=', subscription().subscriptionId, '&rg=', variables('rgname')]",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters":  {}
