@@ -138,7 +138,7 @@
         },
         "sshPublicKey": {
             "type": "string",
-            "defaultValue": "",
+            "defaultValue": " ",
             "metadata": {
                 "description": "SSH RSA public key file as a string. Must be specified if Authentication Type is 'sshPublicKey'."
             }
@@ -165,7 +165,7 @@
 				}
 		},
 		"StorageAccountFileShareDirectory": {
-			"defaultValue": "",
+			"defaultValue": "None",
 			"type": "String",
 			"metadata": {
 					"description": "The subdirectory hosting the bootstrap files. Only required if hosting multiple bootstrap directories on the same share"
