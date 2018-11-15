@@ -143,28 +143,28 @@
                 "description": "SSH RSA public key file as a string. Must be specified if Authentication Type is 'sshPublicKey'."
             }
         },
-		"BootstrapStorageAccount": {
+		"bootstrapStorageAccount": {
 			"defaultValue": "",
 			"type": "String",
 			"metadata": {
 					"description": "Storage account hosting the bootstrap files"
 				}
 		},
-        "BootstrapStorageAccountAccessKey": {
+        "bootstrapStorageAccountAccessKey": {
             "type": "securestring",
             "metadata":{
               "description": "Storage account access key to read blob data privately"
             }
         },
 
-		"StorageAccountFileShare": {
+		"bootstrapFileShare": {
 			"defaultValue": "",
 			"type": "String",
 			"metadata": {
 					"description": "The file share in the storage account where the bootstrap files are located"
 				}
 		},
-		"StorageAccountFileShareDirectory": {
+		"bootstrapSharedDir": {
 			"defaultValue": "None",
 			"type": "String",
 			"metadata": {
@@ -251,7 +251,7 @@
         "trustedSubnetName" : "[concat(parameters('virtualNetworkName'), '-trust-subnet')]",
         "mgmtPublicIPName" : "[concat(variables('rgname'), '-mgmt-pip-', variables('namingInfix'))]",
         "firewallVmName": "[concat(variables('rgName'), '-outbound-vm-series-firewall')]",
-		"customDataField": "[concat('storage-account=', parameters('BootstrapStorageAccount'), ',access-key=', parameters('BootstrapStorageAccountAccessKey'), ',file-share=', parameters('StorageAccountFileShare'),',share-directory=', parameters('StorageAccountFileShareDirectory'))]",
+		"customDataField": "[concat('storage-account=', parameters('bootstrapStorageAccount'), ',access-key=', parameters('bootstrapStorageAccountAccessKey'), ',file-share=', parameters('bootstrapFileShare'),',share-directory=', parameters('bootstrapSharedDir'))]",
         "space": " "
     },
 
