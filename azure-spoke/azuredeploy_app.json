@@ -319,6 +319,9 @@
                     },
                     "baseUrl": {
                          "value": "[variables('baseUrl')]"
+                    },
+                    "inboundFirewallResourceGroupName": {
+                         "value": "[parameters('inboundFirewallResourceGroupName')]"
                     }
                 }
              }
