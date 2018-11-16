@@ -33,6 +33,12 @@
             },
             "defaultValue": "1.2.3.4"
         },
+        "applicationLoadBalancerIP": {
+            "type": "string",
+            "metadata": {
+                "description": "IP Address of the Load Balancer frontending the app."
+            }
+        },
         "inboundFirewallResourceGroupName": {
             "type": "string",
             "metadata": {
@@ -283,6 +289,9 @@
                 "parameters": {
                     "storageAccountName": {
                          "value": "[reference('SettingUpStorageAccount').outputs.sid.value]"
+                    },
+                    "ilbFrontendIP": {
+                        "value": "[parameters('applicationLoadBalancerIP')]"
                     },
                     "virtualNetworkName": {
                          "value": "[reference('SetupVNET').outputs.vnetName.value]"

@@ -1,59 +1,36 @@
 {
-    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "hubLoadBalancerSku": {
-            "value": "Standard"
-        },
-        "storageName": {
-            "value": "rrhubstorage1"
-        },
-        "mgmtPublicIPDns": {
-            "value": "rrhubmgmt1"
-        },
-        "networkSecurityGroupInboundIP": {
-            "value": "199.167.52.5/32"
-        },
-        "imageVersion": {
-            "value": "latest"
-        },
-        "storageType": {
-            "value": "Standard_LRS"
-        },
-
         "virtualNetworkName": {
-            "value": "hubvnet"
+            "value": "rr-hub-vnet-2"
         },
         "virtualNetworkAddressPrefix": {
             "value": "10.0.0.0/16"
         },
-        "mgmtSubnetName": {
-            "value": "hubMgmt"
-        },
         "mgmtSubnetPrefix": {
             "value": "10.0.0.0/24"
-        },
-        "untrustedSubnetName": {
-            "value": "Untrust"
         },
         "untrustedSubnetPrefix": {
             "value": "10.0.1.0/24"
         },
-        "trustedSubnetName": {
-            "value": "Trust"
-        },
         "trustedSubnetPrefix": {
             "value": "10.0.2.0/24"
         },
-        "mgmtPublicIPName": {
-            "value": "mgmt-pip"
-        },
-        
-        "loadBalancerName": {
-            "value": "outbound-lb"
-        },
         "loadBalancerIP": {
             "value": "10.0.2.4"
+        },
+        "storageName": {
+            "value": "rrhubvnet2storage"
+        },
+        "storageType": {
+            "value": "Standard_LRS"
+        },
+        "networkSecurityGroupInboundIP": {
+            "value": "199.167.54.229/32"
+        },
+        "imageVersion": {
+            "value": "latest"
         },
         "firewallModel": {
             "value": "byol"
@@ -71,21 +48,35 @@
             "value": "Dem0pa$$w0rd"
         },
         "sshPublicKey": {
-            "value": ""
+            "value": "  "
         },
-        "subscriptionId": {
+        "bootstrapStorageAccount": {
+            "value": "rrbootstrap"
         },
-        "appID": {
+        "bootstrapStorageAccountAccessKey": {},
+        "storageAccountFileShare": {
+            "value": "bootstrapfiles"
         },
-        "appSecret": {
+        "storageAccountFileShareDirectory": {
+            "value": "rr-hub-1"
         },
-        "TenantId":{
+        "vmScaleSetMinCount": {
+            "value": 1
         },
-        "panoramaIP": {
+        "vmScaleSetMaxCount": {
+            "value": 3
         },
-        "panoramaApiKey": {
+        "scaleInThreshold": {
+            "value": 20
         },
-        "licenseDeactivationKey": {
+        "scaleOutThreshold": {
+            "value": 80
+        },
+        "autoScaleMetric": {
+            "value": "Active Sessions"
+        },
+        "vmLicenseHandlerUrl": {
+            "value": "https://rrtmpl7.azurewebsites.net/api/infra?code=hICtQhyhVPbu7gh1J81gc69oQErB6Lby64MZaopIq4WpMIhVrgCvlg=="
         }
     }
 }
