@@ -277,9 +277,6 @@
             "dependsOn": [
                 "Microsoft.Resources/deployments/SetupVNET"
             ],
-            "tags": {
-                "PanoramaManaged": "yes"
-            },
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
