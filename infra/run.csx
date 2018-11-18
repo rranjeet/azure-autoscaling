@@ -58,7 +58,6 @@ public class ScaleMessageContext
 // Service Bus end point is read as an environment variable
 // For example - 
 // Endpoint=sb://pa-vm-autoscaling-servicebus7.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=VdBYi0jWRTjcKOhyg05x3/BPj7rlZYfg8xSe1o/yjlA= 
-
 static async Task<string> SendMessage(string ConnectionString, string QueueName, string msg, TraceWriter log)
 {
      Microsoft.Azure.ServiceBus.Message sbMsg = new Microsoft.Azure.ServiceBus.Message(Encoding.UTF8.GetBytes(msg));
@@ -84,43 +83,117 @@ public static HttpResponseMessage Run(HttpRequestMessage request, TraceWriter lo
     log.Info("Received a HTTP Request " + request_body);
 
     string http_method = request.Method.ToString();
+    bool validGetMsg = False;
     
 
     if (http_method == "GET")
     {
-        string[] metric_list = { 
-                        "panSessionActive",
-                        "DataPlaneCPUUtilizationPct",
-                        "panGPGatewayUtilizationPct",
-                        "panGPGWUtilizationActiveTunnels",
-                        "DataPlanePacketBufferUtilization",
-                        "panSessionSslProxyUtilization",
-                        "panSessionUtilization"
-                        };
-        string instrumentationKey = request.GetQueryNameValuePairs()
-        .FirstOrDefault(q => string.Compare(q.Key, "ik", true) == 0)
+        string operation = request.GetQueryNameValuePairs()
+        .FirstOrDefault(q => string.Compare(q.Key, "op", true) == 0)
         .Value;
-        log.Info("Instrumentation key " + instrumentationKey);
+        string subscriptionId = request.GetQueryNameValuePairs()
+            .FirstOrDefault(q => string.Compare(q.Key, "subsId", true) == 0)
+            .Value;
+        string resourceGroupName = request.GetQueryNameValuePairs()
+        .FirstOrDefault(q => string.Compare(q.Key, "rg", true) == 0)
+        .Value;
 
-        TelemetryClient telemetry_client = new TelemetryClient();
-        telemetry_client.Context.InstrumentationKey = instrumentationKey;
-
-        foreach (string metric_name in metric_list)
+        if (operation == "PublishCustomMetrics")
         {
-            log.Info("Publishing metrics for " + metric_name);
-            var metric = new MetricTelemetry();
-            metric.Name = metric_name;
-            metric.Sum = 0;
-            telemetry_client.TrackMetric(metric);
-            telemetry_client.Flush();
-            System.Threading.Thread.Sleep(50);
+            validGetMsg = True;
+            string[] metric_list = { 
+                            "panSessionActive",
+                            "DataPlaneCPUUtilizationPct",
+                            "panGPGatewayUtilizationPct",
+                            "panGPGWUtilizationActiveTunnels",
+                            "DataPlanePacketBufferUtilization",
+                            "panSessionSslProxyUtilization",
+                            "panSessionUtilization"
+                            };
+            string instrumentationKey = request.GetQueryNameValuePairs()
+            .FirstOrDefault(q => string.Compare(q.Key, "ik", true) == 0)
+            .Value;
+            
+
+            log.Info("Instrumentation key " + instrumentationKey);
+            log.Info("Subscription Id " + subscriptionId);
+            log.Info("Resource Group Name " + resourceGroupName);
+
+            TelemetryClient telemetry_client = new TelemetryClient();
+            telemetry_client.Context.InstrumentationKey = instrumentationKey;
+
+            foreach (string metric_name in metric_list)
+            {
+                log.Info("Publishing metrics for " + metric_name);
+                var metric = new MetricTelemetry();
+                metric.Name = metric_name;
+                metric.Sum = 0;
+                telemetry_client.TrackMetric(metric);
+                telemetry_client.Flush();
+                System.Threading.Thread.Sleep(100);
+            }
+
+            request_body =  "{" +
+                            "\"version\": \"1.0\"," +
+                            "\"operation\": \"New Resource Group\"," +
+                            "\"context\": {" +
+                            "\"subscriptionId\": \"" + subscriptionId + "\"," +
+                            "\"instrKey\": \"" + instrumentationKey + "\"," +
+                            "\"resourceGroupName\": \"" + resourceGroupName + "\"" +
+                            "}}";
+            log.Info("New RG message to Service Bus " + request_body);
         }
-        
+
+        if (operation == "NotifyCompletion")
+        {
+            validGetMsg = True;
+            request_body =  "{" +
+                            "\"version\": \"1.0\"," +
+                            "\"operation\": \"Resource Group Deployment completed\"," +
+                            "\"context\": {" +
+                            "\"subscriptionId\": \"" + subscriptionId + "\"," +                            
+                            "\"resourceGroupName\": \"" + resourceGroupName + "\"" +
+                            "}}";
+            log.Info("New RG deployment completed to Service Bus " + request_body);
+        }
+
+        if (validGetMsg)
+        {
+            var ServiceBusConnectionString =  Environment.GetEnvironmentVariable("PanServiceBusConnectionString", 
+                                                                            EnvironmentVariableTarget.Process);
+            string QueueName = subscriptionId;
+            string result = SendMessage(ServiceBusConnectionString, 
+                                        QueueName, 
+                                        request_body, log).GetAwaiter().GetResult();
+        }
+                
         string template = @"{'$schema': 'https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#', 'contentVersion': '1.0.0.0', 'parameters': {}, 'variables': {}, 'resources': []}";
         HttpResponseMessage myResponse = request.CreateResponse(HttpStatusCode.OK);
         myResponse.Content = new StringContent(template, System.Text.Encoding.UTF8, "application/json");
         return myResponse;
     }
+    /*
+    Sample message that we receive from the Autoscale handlers in VMSS.
+    {
+        "version": "1.0",
+        "status": "Activated",
+        "operation": "Scale In",
+        "context": {
+                "timestamp": "2016-03-11T07:31:04.5834118Z",
+                "id": "/subscriptions/s1/resourceGroups/rg1/providers/microsoft.insights/autoscalesettings/myautoscaleSetting",
+                "name": "myautoscaleSetting",
+                "details": "Autoscale successfully started scale operation for resource 'MyCSRole' from capacity '3' to capacity '2'",
+                "subscriptionId": "93486f84-8de9-44f1-b4a8-f66aed312b64",
+                "resourceGroupName": "rg1",
+                "resourceName": "MyCSRole",
+                "resourceType": "microsoft.classiccompute/domainnames/slots/roles",
+                "resourceId": "/subscriptions/s1/resourceGroups/rg1/providers/microsoft.classicCompute/domainNames/myCloudService/slots/Production/roles/MyCSRole",
+                "portalLink": "https://portal.azure.com/#resource/subscriptions/s1/resourceGroups/rg1/providers/microsoft.classicCompute/domainNames/myCloudService",
+                "oldCapacity": "3",
+                "newCapacity": "2"
+        }
+}
+    */
 
     if (http_method == "POST")
     {
@@ -142,10 +215,11 @@ public static HttpResponseMessage Run(HttpRequestMessage request, TraceWriter lo
         PanMessage<ScaleMessageContext> msg = JsonConvert.DeserializeObject<PanMessage<ScaleMessageContext>>(request_body);
         log.Info(msg.context.ToString());
 
-        var ServiceBusConnectionString =  Environment.GetEnvironmentVariable("PanServiceBusConnectionString", EnvironmentVariableTarget.Process);
+        var ServiceBusConnectionString =  Environment.GetEnvironmentVariable("PanServiceBusConnectionString", 
+                                                                            EnvironmentVariableTarget.Process);
         string QueueName = msg.context.subscriptionId;
         string result = SendMessage(ServiceBusConnectionString, QueueName, request_body, log).GetAwaiter().GetResult();
-        return new HttpResponseMessage(HttpStatusCode.OK) {Content = new StringContent(result)};
+        return new HttpResponseMessage( HttpStatusCode.OK ) {Content = new StringContent(result)};
     }
 
     return new HttpResponseMessage(HttpStatusCode.BadRequest) {Content = new StringContent("Invalid request")};
