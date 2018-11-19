@@ -83,7 +83,7 @@ public static HttpResponseMessage Run(HttpRequestMessage request, TraceWriter lo
     log.Info("Received a HTTP Request " + request_body);
 
     string http_method = request.Method.ToString();
-    bool validGetMsg = False;
+    bool validGetMsg = false;
     
 
     if (http_method == "GET")
@@ -100,7 +100,7 @@ public static HttpResponseMessage Run(HttpRequestMessage request, TraceWriter lo
 
         if (operation == "PublishCustomMetrics")
         {
-            validGetMsg = True;
+            validGetMsg = true;
             string[] metric_list = { 
                             "panSessionActive",
                             "DataPlaneCPUUtilizationPct",
@@ -146,7 +146,7 @@ public static HttpResponseMessage Run(HttpRequestMessage request, TraceWriter lo
 
         if (operation == "NotifyCompletion")
         {
-            validGetMsg = True;
+            validGetMsg = true;
             request_body =  "{" +
                             "\"version\": \"1.0\"," +
                             "\"operation\": \"Resource Group Deployment completed\"," +
