@@ -46,6 +46,7 @@
     "variables": {
         "location" : "[resourceGroup().location]",
         "functionAppName": "[parameters('appName')]",
+        "namingInfix": "[substring(uniqueString(resourceGroup().id), 0, 5)]",
         "hostingPlanName": "[concat(parameters('appName'), '-plan')]",
         "storageAccountName": "[concat(uniquestring(resourceGroup().id), 'functions')]",
         "RootManageSharedAccessKey_name": "RootManageSharedAccessKey",
@@ -53,6 +54,7 @@
         "baseUrl" : "https://raw.githubusercontent.com/rranjeet/azure-autoscaling/master/infra/",
         "serviceBusUrl": "[concat(variables('baseUrl'), 'deployServiceBus.json')]",
         "functionHostingPlan": "Basic",
+        "appInsightsInstancename": "[concat(parameters('appName'), '-appinsights-', variables('namingInfix'))]",
         "workerSize": "0"
     },
     "resources": [
@@ -108,6 +110,19 @@
             ]
         },
         {
+            "apiVersion": "2015-05-01",
+            "name": "[variables('appInsightsInstancename')]",
+            "type": "microsoft.insights/components",
+            "location": "East US",
+            "tags": {
+                "[concat('hidden-link:', resourceGroup().id, '/providers/Microsoft.Web/sites/', parameters('appName'))]": "Resource"
+            },
+            "properties": {
+                "ApplicationId": "[parameters('appName')]",
+                "Request_Source": "IbizaWebAppExtensionCreate"
+            }
+        },
+        {
             "apiVersion": "2015-08-01",
             "type": "Microsoft.Web/sites",
             "name": "[variables('functionAppName')]",
@@ -128,7 +143,11 @@
                     "appSettings": [
                         {
                             "name": "FUNCTIONS_EXTENSION_VERSION",
-                            "value": "~1"
+                            "value": "~2"
+                        },
+                        {
+                            "name": "FUNCTIONS_WORKER_RUNTIME",
+                            "value": "dotnet"
                         },
                         {
                             "name": "AzureWebJobsStorage",
@@ -139,15 +158,32 @@
                             "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-05-01-preview').key1,';')]"
                         },
                         {
+                            "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-05-01-preview').key1)]"
+                        },
+                        {
                             "name": "PanServiceBusConnectionString",
                             "value": "[reference('SetupServiceBusNamespace').outputs.NamespaceDefaultConnectionString.value]"
+                        },
+                        {
+                            "name": "WEBSITE_CONTENTSHARE",
+                            "value": "[concat(toLower(parameters('appName')), '887c')]"
+                        },
+                        {
+                            "name": "WEBSITE_NODE_DEFAULT_VERSION",
+                            "value": "8.11.1"
+                        },
+                        {
+                            "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                            "value": "[reference(resourceId('microsoft.insights/components/', variables('appInsightsInstancename')), '2015-05-01').InstrumentationKey]"
                         }
                     ]
                 }
             },
             "dependsOn": [
                 "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]",
-                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
+                "[resourceId('microsoft.insights/components/', variables('appInsightsInstancename'))]"
             ],
             "resources": [
                 {
