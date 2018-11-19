@@ -143,11 +143,7 @@
                     "appSettings": [
                         {
                             "name": "FUNCTIONS_EXTENSION_VERSION",
-                            "value": "~2"
-                        },
-                        {
-                            "name": "FUNCTIONS_WORKER_RUNTIME",
-                            "value": "dotnet"
+                            "value": "~1"
                         },
                         {
                             "name": "AzureWebJobsStorage",
