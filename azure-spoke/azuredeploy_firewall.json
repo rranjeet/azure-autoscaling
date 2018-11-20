@@ -2,17 +2,22 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "appGatewayDnsName": {
+            "type": "string",
+            "metadata": {
+                "description": "App Gateway Public IP DNS Name. Must be globally unique."
+            }
+        },
         "networkSecurityGroupInboundSrcIP": {
             "type": "string",
              "metadata": {
                  "description": "Your source public IP address. Added to the inbound NSG on eth0 (MGMT), to restrict access to the deployment."
-             },
-             "defaultValue": "1.1.1.1/32"
+             }
         },
         "appLoadBalancerIP": {
             "type": "string",
             "metadata": {
-                "description": "IP Address of the Internal Load Balancer fronting the application"
+                "description": "IP Address of the Internal Load Balancer fronting the first application that will be onboarded."
             }
         },
         "fwLoadBalancerIP": {
@@ -54,12 +59,6 @@
             "defaultValue": "192.168.2.0/24",
             "metadata": {
                 "description": "CIDR for Trusted Network"
-            }
-        },
-        "appGatewayDnsName": {
-            "type": "string",
-            "metadata": {
-                "description": "App Gateway Public IP DNS Name. Must be globally unique."
             }
         },
         "appGatewaySubnetPrefix": {

@@ -292,11 +292,7 @@
                                     "properties": {
                                         "subnet": {
                                             "id": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'), '/subnets/', parameters('subnetNameUntrust'))]"
-                                        },
-                                        "loadBalancerBackendAddressPools": [
-                                        {
-                                            "id": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/loadBalancers/', parameters('fwLbName'), '/backendAddressPools/', parameters('fwLbBePoolName'))]"
-                                        }]
+                                        }
                                     }
                                 }]
                             }
@@ -310,6 +306,10 @@
                                 {
                                     "name": "[variables('ipConfigNametrust')]",
                                     "properties": {
+                                        "loadBalancerBackendAddressPools": [
+                                        {
+                                            "id": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/loadBalancers/', parameters('fwLbName'), '/backendAddressPools/', parameters('fwLbBePoolName'))]"
+                                        }],
                                         "subnet": {
                                             "id": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'), '/subnets/', parameters('subnetNameTrust'))]"
                                         }

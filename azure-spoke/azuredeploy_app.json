@@ -223,6 +223,12 @@
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
+                    "connectToHub": {
+                        "value": "[parameters('connectToHub')]"
+                    },
+                    "udrName": {
+                        "value": "defaultBackendUDR"
+                    },
                     "nsgName": {
                         "value": "[variables('networkSecurityGroupName')]"
                     },

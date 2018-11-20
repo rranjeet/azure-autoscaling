@@ -49,8 +49,7 @@
             "type": "string",
             "metadata": {
                 "description": "Name of the storage account created to store the VM's disks.  Storage account name must be globally unique."
-            },
-            "defaultValue": "Enter a globally unique name"
+            }
         },
         "storageType": {
             "type": "string",
