@@ -283,7 +283,23 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[concat(parameters('vmLicenseHandlerUrl'), '&ik=', reference('SetupAppInsights').outputs.instrumentationKey.value, '&subsId=', subscription().subscriptionId, '&rg=', variables('rgname'))]",
+                    "uri": "[concat(parameters('vmLicenseHandlerUrl'), '&op=PublishCustomMetrics', '&ik=', reference('SetupAppInsights').outputs.instrumentationKey.value, '&subsId=', subscription().subscriptionId, '&rg=', variables('rgname'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters":  {}
+            }
+        },
+        {
+            "name": "NotifyResourceGroupCompletion",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2016-06-01",
+            "dependsOn": [
+                "Microsoft.Resources/deployments/SetupHubVMSeries"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('vmLicenseHandlerUrl'), '&op=NotifyCompletion', '&subsId=', subscription().subscriptionId, '&rg=', variables('rgname'))]",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters":  {}
