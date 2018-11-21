@@ -86,7 +86,7 @@
                 "properties": {
                     "addressPrefix": "[parameters('subnetWWWPrefix')]",
                     "routeTable": {
-                        "id": "[if equals(parameters('connectToHub'), 'Yes'), resourceId('Microsoft.Network/routeTables', parameters('udrName')), null]"
+                        "id": "[if(equals(parameters('connectToHub'), 'Yes'), resourceId('Microsoft.Network/routeTables', parameters('udrName')), null)]"
                     }
                 }
             }
