@@ -74,7 +74,6 @@
         "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('vnetname'))]",
         "subnetLBRef": "[concat(variables('vnetID'),'/subnets/',parameters('subnetLBName'))]",
         "subnetWWWRef": "[concat(variables('vnetID'),'/subnets/',parameters('subnetWWWName'))]",
-        "nullVariable": null,
 
         "subnetsWithHub": [
             {
