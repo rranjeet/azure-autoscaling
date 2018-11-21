@@ -129,7 +129,7 @@
         },
         {
             "condition": "[equals(parameters('connectToHub'), 'Yes')]",
-            "name": "[variables('vnetname')]",
+            "name": "[concat(variables('vnetname'), '-hub']",
             "type": "Microsoft.Network/virtualNetworks",
             "location": "[variables('location')]",
             "apiVersion": "2015-06-15",

@@ -1,81 +1,61 @@
+
 {
-  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-        "hubResourceGroupName": {
-            "value": "rr-hub-1"
-        },
-        "hubVnetName": {
-            "value": "rr-hub1-vnet"
-        },
-        "hubLoadBalancerIP": {
-            "value": "10.0.2.4"
-        },
-        "networkSecurityGroupInboundSrcIP": {
-             "value": "199.167.54.229/32"
-        },
-        "virtualNetworkName": {
-            "value": "rr-spoke3-vnet"
-        },
-        "virtualNetworkAddressPrefix": {
-            "value": "192.168.8.0/21"
-        },
-        "mgmtSubnetPrefix": {
-            "value": "192.168.8.0/24"
-        },
-        "untrustedSubnetPrefix": {
-            "value": "192.168.9.0/24"
-        },
-        "trustedSubnetPrefix": {
-            "value": "192.168.10.0/24"
-        },
-        "appGatewayDnsName": {
-            "value": "rrspoke3appgw"
-        },
-        "appGatewaySubnetPrefix": {
-            "value": "192.168.11.0/24"
-        },
-        "backendSubnetPrefix": {
-            "value": "192.168.12.0/24"
-        },
-        "backendVmSize": {
-             "value": "Standard_D1_v2"
-        },
-        "firewallModel": {
-             "value": "byol"
-        },
-        "firewallVmSize": {
-             "value": "Standard_D3_v2"
-        },
-        "storageAccountName": {
-            "value": "rrspoke3storage"
-        },
-        "storageAccountType": {
-            "value": "Standard_LRS"
-        },
-        "username": {
-            "value": "pandemo"
-        },
-        "authenticationType": {
-            "value": "password"
-        },
-        "password": {
-            "value": "Dem0pa$$w0rd"
-        },
-        "sshPublicKey": {
-            "value": ""
-        },
-        "bootstrapStorageAccount": {
-            "value": "rrbootstrapstroage"
-        },
-        "bootstrapStorageAccountAccessKey": {
-            "value": "g48c91swtfOhJPu/+kg815SiF4xUP2SwRcvfC0RN7xxfBQVmsahPnxIIZWBzMQ8gfRYAU9baIDKYe9qSqDtBGQ=="
-        },
-        "bootstrapFileShare": {
-            "value": "rr-spoke-3"
-        },
-        "bootstrapSharedDir": {
-            "value": ""
-        }
+    "connectToHub": {
+      "value": "Yes"
+    },
+    "hubResourceGroupName": {
+      "value": "rr-asc-hub-3"
+    },
+    "hubVnetName": {
+      "value": "hub-vnet-3"
+    },
+    "hubLoadBalancerIP": {
+      "value": "10.2.2.4"
+    },
+    "applicationLoadBalancerIP": {
+      "value": "10.10.1.4"
+    },
+    "inboundFirewallResourceGroupName": {
+      "value": "rr-asc-fw-2"
+    },
+    "inboundFirewallVnetName": {
+      "value": "inbound-fw-vnet-2"
+    },
+    "networkSecurityGroupInboundSrcIP": {
+      "value": "199.167.54.229/32"
+    },
+    "virtualNetworkName": {
+      "value": "spoke-app-vnet-2-hub-3"
+    },
+    "virtualNetworkAddressPrefix": {
+      "value": "10.10.0.0/16"
+    },
+    "mgmtSubnetPrefix": {
+      "value": "10.10.0.0/24"
+    },
+    "trustedSubnetPrefix": {
+      "value": "10.10.1.0/24"
+    },
+    "backendSubnetPrefix": {
+      "value": "10.10.2.0/24"
+    },
+    "backendVmSize": {
+      "value": "Standard_D1_v2"
+    },
+    "storageAccountName": {
+      "value": "rrspokeapphub3app2"
+    },
+    "storageAccountType": {
+      "value": "Standard_LRS"
+    },
+    "username": {
+      "value": "pandemo"
+    },
+    "password": {
+      "value": "Dem0pa$$w0rd"
+    }
   }
 }
