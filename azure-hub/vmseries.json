@@ -292,6 +292,12 @@
                                     "properties": {
                                         "subnet": {
                                             "id": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'), '/subnets/', parameters('subnetNameUntrust'))]"
+                                        },
+                                        "publicIPAddressConfiguration": {
+                                            "name": "hub_pavm_pip",
+                                            "properties": {
+                                                "idleTimeoutInMinutes": 15
+                                            }
                                         }
                                     }
                                 }]
