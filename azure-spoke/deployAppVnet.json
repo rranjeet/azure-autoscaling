@@ -74,10 +74,9 @@
         "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('vnetname'))]",
         "subnetLBRef": "[concat(variables('vnetID'),'/subnets/',parameters('subnetLBName'))]",
         "subnetWWWRef": "[concat(variables('vnetID'),'/subnets/',parameters('subnetWWWName'))]",
-        "routeTableId": "[resourceId('Microsoft.Network/routeTables', parameters('udrName'))]",
         "nullVariable": null,
 
-        "subnets": [
+        "subnetsWithHub": [
             {
                 "name": "[parameters('subnetLBName')]",
                 "properties": {
@@ -89,14 +88,30 @@
                 "properties": {
                     "addressPrefix": "[parameters('subnetWWWPrefix')]",
                     "routeTable": {
-                        "id": "[if(equals(parameters('connectToHub'), 'Yes'), variables('routeTableId'), variables('nullVariable'))]"
+                        "id": "[resourceId('Microsoft.Network/routeTables', parameters('udrName'))]"
                     }
                 }
             }
+        ],
+        "subnetsWithoutHub": [
+            {
+                "name": "[parameters('subnetLBName')]",
+                "properties": {
+                    "addressPrefix": "[parameters('subnetLBPrefix')]"
+                }
+            },
+            {
+                "name": "[parameters('subnetWWWName')]",
+                "properties": {
+                    "addressPrefix": "[parameters('subnetWWWPrefix')]"
+                }
+            }
         ]
+
     },
     "resources": [
         {
+            "condition": "[equals(parameters('connectToHub'), 'No')]",
             "name": "[variables('vnetname')]",
             "type": "Microsoft.Network/virtualNetworks",
             "location": "[variables('location')]",
@@ -110,9 +125,28 @@
                         "[parameters('virtualNetworkAddressPrefix')]"
                     ]
                 },
-                "subnets": "[variables('subnets')]"
+                "subnets": "[variables('subnetsWithoutHub')]"
+            }
+        },
+        {
+            "condition": "[equals(parameters('connectToHub'), 'Yes')]",
+            "name": "[variables('vnetname')]",
+            "type": "Microsoft.Network/virtualNetworks",
+            "location": "[variables('location')]",
+            "apiVersion": "2015-06-15",
+            "tags": {
+                    "PanoramaManaged": "yes"
+            },
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('virtualNetworkAddressPrefix')]"
+                    ]
+                },
+                "subnets": "[variables('subnetsWithHub')]"
             }
         }
+
     ],
     "outputs": {
         "vnetName": {
