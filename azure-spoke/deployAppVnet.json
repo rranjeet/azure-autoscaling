@@ -74,8 +74,9 @@
         "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('vnetname'))]",
         "subnetLBRef": "[concat(variables('vnetID'),'/subnets/',parameters('subnetLBName'))]",
         "subnetWWWRef": "[concat(variables('vnetID'),'/subnets/',parameters('subnetWWWName'))]",
+        "vnetnameHub": "[concat(parameters('virtualNetworkName'), '-hub')]",
 
-        "subnetsWithHub": [
+        "subnets": [
             {
                 "name": "[parameters('subnetLBName')]",
                 "properties": {
@@ -91,26 +92,10 @@
                     }
                 }
             }
-        ],
-        "subnetsWithoutHub": [
-            {
-                "name": "[parameters('subnetLBName')]",
-                "properties": {
-                    "addressPrefix": "[parameters('subnetLBPrefix')]"
-                }
-            },
-            {
-                "name": "[parameters('subnetWWWName')]",
-                "properties": {
-                    "addressPrefix": "[parameters('subnetWWWPrefix')]"
-                }
-            }
         ]
-
     },
     "resources": [
         {
-            "condition": "[equals(parameters('connectToHub'), 'No')]",
             "name": "[variables('vnetname')]",
             "type": "Microsoft.Network/virtualNetworks",
             "location": "[variables('location')]",
@@ -124,28 +109,9 @@
                         "[parameters('virtualNetworkAddressPrefix')]"
                     ]
                 },
-                "subnets": "[variables('subnetsWithoutHub')]"
-            }
-        },
-        {
-            "condition": "[equals(parameters('connectToHub'), 'Yes')]",
-            "name": "[concat(variables('vnetname'), '-hub')]",
-            "type": "Microsoft.Network/virtualNetworks",
-            "location": "[variables('location')]",
-            "apiVersion": "2015-06-15",
-            "tags": {
-                    "PanoramaManaged": "yes"
-            },
-            "properties": {
-                "addressSpace": {
-                    "addressPrefixes": [
-                        "[parameters('virtualNetworkAddressPrefix')]"
-                    ]
-                },
-                "subnets": "[variables('subnetsWithHub')]"
+                "subnets": "[variables('subnets')]"
             }
         }
-
     ],
     "outputs": {
         "vnetName": {
