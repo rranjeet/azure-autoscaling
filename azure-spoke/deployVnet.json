@@ -89,24 +89,6 @@
             "metadata": {
                 "description": "backend WWW CIDR"
             }
-        },
-        "connectToHub": {
-            "type": "string",
-            "allowedValues": [
-                "Yes",
-                "No"
-            ],
-            "metadata": {
-                "description": "Select Yes, if you want the outbound traffic to be protected by a hub firewall."
-            },
-            "defaultValue": "No"
-        },
-        "udrName": {
-            "type": "string",
-            "defaultValue": "None",
-            "metadata": {
-                "description": "UDR to attach to the app backend"
-            }
         }
     },
     "variables": {
@@ -153,10 +135,7 @@
             {
                 "name": "[parameters('subnetWWWName')]",
                 "properties": {
-                    "addressPrefix": "[parameters('subnetWWWPrefix')]",
-                    "routeTable": {
-                        "id": "[if (parameters('connectToHub'), 'Yes'), resourceId('Microsoft.Network/routeTables', parameters('udrName')), null]"
-                    }
+                    "addressPrefix": "[parameters('subnetWWWPrefix')]"
                 }
             }
         ]
