@@ -74,6 +74,9 @@
         "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('vnetname'))]",
         "subnetLBRef": "[concat(variables('vnetID'),'/subnets/',parameters('subnetLBName'))]",
         "subnetWWWRef": "[concat(variables('vnetID'),'/subnets/',parameters('subnetWWWName'))]",
+        "routeTableId": "[resourceId('Microsoft.Network/routeTables', parameters('udrName'))]",
+        "nullVariable": null,
+
         "subnets": [
             {
                 "name": "[parameters('subnetLBName')]",
@@ -86,7 +89,7 @@
                 "properties": {
                     "addressPrefix": "[parameters('subnetWWWPrefix')]",
                     "routeTable": {
-                        "id": "[if(equals(parameters('connectToHub'), 'Yes'), resourceId('Microsoft.Network/routeTables', parameters('udrName')), null)]"
+                        "id": "[if(equals(parameters('connectToHub'), 'Yes'), variables('routeTableId'), variables('nullVariable'))]"
                     }
                 }
             }
