@@ -154,8 +154,11 @@
         "storageAccountSetupURL" : "[concat(variables('baseUrl'),'/deployStorage.json')]",
         "vnetPeeringURL": "[concat(variables('baseUrl'), '/deployVnetPeering.json')]",
         "defaultUdrSetupURL": "[concat(variables('baseUrl'), '/deployDefaultUDR.json')]",
+        "emptyUdrSetupURL": "[concat(variables('baseUrl'), '/deployEmptyUDR.json')]",
         "networkApiVersion": "2017-06-01",
         "computeApiVersion": "2017-03-30",
+        "defaultUdrName": "defaultBackendUDR",
+        "emptyUdrName": "emptyUDR",
         "space": " "
     },
     "resources": [
@@ -186,6 +189,27 @@
             }
         },
         {
+            "condition": "[equals(parameters('connectToHub'), 'No')]",
+            "name": "SetupEmptyUDR",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2015-01-01",
+            "dependsOn": [
+                "Microsoft.Resources/deployments/SetupNSG"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('emptyUdrSetupURL')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "udrName": {
+                         "value": "[variables('emptyUdrName')]"
+                    }
+                }
+            }
+        },
+        {
             "condition": "[equals(parameters('connectToHub'), 'Yes')]",
             "name": "SetupDefaultUDR",
             "type": "Microsoft.Resources/deployments",
@@ -205,6 +229,9 @@
                     },
                     "nextHopIP": {
                          "value": "[parameters('hubLoadBalancerIP')]"
+                    },
+                    "udrName": {
+                        "value": "[variables('defaultUdrName')]"
                     }
                 }
             }
@@ -215,7 +242,8 @@
             "apiVersion": "2015-01-01",
             "dependsOn": [
                 "Microsoft.Resources/deployments/SetupNSG",
-                "Microsoft.Resources/deployments/SetupDefaultUDR"
+                "Microsoft.Resources/deployments/SetupDefaultUDR",
+                "Microsoft.Resources/deployments/SetupEmptyUDR"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -250,6 +278,9 @@
                     },
                     "subnetWWWPrefix": {
                          "value": "[parameters('backendSubnetPrefix')]"
+                    },
+                    "udrName": {
+                        "value": "[if(equals(parameters('connectToHub'), 'Yes'), variables('defaultUdrName'), variables('emptyUdrName'))]"
                     }
                 }
             }

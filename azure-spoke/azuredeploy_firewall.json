@@ -274,6 +274,7 @@
         "appGwBackendPoolName": "[concat(variables('rgname'), '_appGwBepool_', variables('namingInfix'))]",
         "fwLbBePoolName": "[concat(variables('rgname'), '_fw_lb_backend_pool_', variables('namingInfix'))]",
         "vmssName": "[concat('pavmfw', variables('namingInfix'))]",
+        "udrName": "defaultBackendUDR",
         "customDataField": "[concat('storage-account=', parameters('bootstrapStorageAccount'), ',access-key=', parameters('bootstrapStorageAccountAccessKey'), ',file-share=', parameters('bootstrapFileShare'),',share-directory=', parameters('bootstrapSharedDir'))]",
         "space": " "
     },
@@ -371,6 +372,9 @@
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
+                    "udrName": {
+                        "value": "[variables('udrName')]"
+                    },
                     "subnetPrefix": {
                          "value": "[concat(parameters('appLoadBalancerIP'), '/32')]"
                     },
@@ -433,6 +437,9 @@
                     },
                     "subnetWWWPrefix": {
                          "value": "[parameters('backendSubnetPrefix')]"
+                    },
+                    "udrName": {
+                         "value": "[variables('udrName')]"
                     }
                 }
             }

@@ -61,7 +61,7 @@
         },
         "udrName": {
             "type": "string",
-            "defaultValue": "None",
+            "defaultValue": "defaultBackendUDR",
             "metadata": {
                 "description": "UDR to attach to the app backend"
             }
@@ -88,7 +88,7 @@
                 "properties": {
                     "addressPrefix": "[parameters('subnetWWWPrefix')]",
                     "routeTable": {
-                        "id": "[if(equals(parameters('connectToHub'), 'Yes'), parameters('udrName'), json('null'))]"
+                        "id": "[resourceId('Microsoft.Network/routeTables', parameters('udrName'))]"
                     }
                 }
             }

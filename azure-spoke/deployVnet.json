@@ -89,7 +89,15 @@
             "metadata": {
                 "description": "backend WWW CIDR"
             }
+        },
+        "udrName": {
+            "type": "string",
+            "defaultValue": "defaultBackendUDR",
+            "metadata": {
+                "description": "Route Table Name"
+            }
         }
+
     },
     "variables": {
         "location": "[resourceGroup().location]",
@@ -128,7 +136,7 @@
                 "properties": {
                     "addressPrefix": "[parameters('subnetLBPrefix')]",
                     "routeTable": {
-                        "id": "[resourceId('Microsoft.Network/routeTables', 'defaultBackendUDR')]"
+                        "id": "[resourceId('Microsoft.Network/routeTables', parameters('udrName'))]"
                     }
                 }
             },

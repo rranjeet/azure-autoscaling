@@ -2,6 +2,13 @@
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "udrName": {
+            "type":"string",
+            "defaultValue": "defaultBackendUDR",
+            "metadata": {
+                "description": "Empty UDR Rule"
+            }
+        },
         "subnetPrefix": {
             "type":"string",
             "defaultValue": "0.0.0.0/0",
@@ -21,7 +28,7 @@
     },
     "resources": [
         {
-			"name": "defaultBackendUDR",
+            "name": "[parameters('udrName')]",
 			"type": "Microsoft.Network/routeTables",
 			"apiVersion": "2015-06-15",
 			"location": "[variables('location')]",
