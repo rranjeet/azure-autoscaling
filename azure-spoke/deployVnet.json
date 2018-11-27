@@ -48,13 +48,6 @@
                 "description": "Subnet for App Gateway"
             }
         },
-        "subnetWWWName": {
-            "type": "string",
-            "defaultValue": "backendSubnet",
-            "metadata": {
-                "description": "Subnet for backend WWW"
-            }
-        },
         "subnet0Prefix": {
             "type": "string",
             "defaultValue": "None",
@@ -83,13 +76,6 @@
                 "description": "App Gateway CIDR"
             }
         },
-        "subnetWWWPrefix": {
-            "type": "string",
-            "defaultValue": "None",
-            "metadata": {
-                "description": "backend WWW CIDR"
-            }
-        },
         "udrName": {
             "type": "string",
             "defaultValue": "defaultBackendUDR",
@@ -108,7 +94,6 @@
         "subnet1Ref": "[concat(variables('vnetID'),'/subnets/',parameters('subnet1Name'))]",
         "subnet2Ref": "[concat(variables('vnetID'),'/subnets/',parameters('subnet2Name'))]",
         "subnetLBRef": "[concat(variables('vnetID'),'/subnets/',parameters('subnetLBName'))]",
-        "subnetWWWRef": "[concat(variables('vnetID'),'/subnets/',parameters('subnetWWWName'))]",
         "subnets": [
             {
                 "name": "[parameters('subnet0Name')]",
@@ -138,12 +123,6 @@
                     "routeTable": {
                         "id": "[resourceId('Microsoft.Network/routeTables', parameters('udrName'))]"
                     }
-                }
-            },
-            {
-                "name": "[parameters('subnetWWWName')]",
-                "properties": {
-                    "addressPrefix": "[parameters('subnetWWWPrefix')]"
                 }
             }
         ]

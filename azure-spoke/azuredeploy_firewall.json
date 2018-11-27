@@ -68,13 +68,6 @@
                 "description": "CIDR for App Gateway"
             }
         },
-        "backendSubnetPrefix": {
-            "type": "string",
-            "defaultValue": "192.168.4.0/24",
-            "metadata": {
-                "description": "CIDR for Backend WWW Network"
-            }
-        },
         "backendVmSize": {
              "type": "string",
              "allowedValues": [
@@ -250,7 +243,6 @@
         "MgmtSubnetName" : "[concat(parameters('virtualNetworkName'), '-mgmt-subnet')]",
         "untrustedSubnetName" : "[concat(parameters('virtualNetworkName'), '-untrust-subnet')]",
         "trustedSubnetName" : "[concat(parameters('virtualNetworkName'), '-trust-subnet')]",
-        "backendSubnetName" : "[concat(parameters('virtualNetworkName'), '-backend-subnet')]",
         "appGatewaySubnetName" : "[concat(parameters('virtualNetworkName'), '-appgw-subnet')]",
         "LoadBalancerType" : "layer-7",
         "firewallVmCount" : 2,
@@ -420,9 +412,6 @@
                     "subnetLBName": {
                          "value": "[variables('appGatewaySubnetName')]"
                     },
-                    "subnetWWWName": {
-                         "value": "[variables('backendSubnetName')]"
-                    },
                     "subnet0Prefix": {
                          "value": "[parameters('mgmtSubnetPrefix')]"
                     },
@@ -434,9 +423,6 @@
                     },
                     "subnetLBPrefix": {
                          "value": "[parameters('appGatewaySubnetPrefix')]"
-                    },
-                    "subnetWWWPrefix": {
-                         "value": "[parameters('backendSubnetPrefix')]"
                     },
                     "udrName": {
                          "value": "[variables('udrName')]"
