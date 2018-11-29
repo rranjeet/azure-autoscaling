@@ -6,41 +6,41 @@
             "type": "string",
             "defaultValue": "hub-vnet",
             "metadata": {
-                "description": "Hub's Virtual Network Name. You need this name to launch the spoke"
+                "description": "Virtual Network Name of the VM-Series Hub firewall."
             }
         },
         "virtualNetworkAddressPrefix": {
             "type": "string",
             "defaultValue": "10.0.0.0/16",
             "metadata": {
-                "description": "CIDR for Virtual Network"
+                "description": "CIDR for Virtual Network."
             }
         },
         "mgmtSubnetPrefix": {
             "type": "string",
             "defaultValue": "10.0.0.0/24",
             "metadata": {
-                "description": "CIDR for Management Network"
+                "description": "CIDR for Management subnet."
             }
         },
-        "untrustedSubnetPrefix": {
+        "untrustSubnetPrefix": {
             "type": "string",
             "defaultValue": "10.0.1.0/24",
             "metadata": {
-                "description": "CIDR for Untrusted Network"
+                "description": "CIDR for Untrust Network."
             }
         },
-        "trustedSubnetPrefix": {
+        "trustSubnetPrefix": {
             "type": "string",
             "defaultValue": "10.0.2.0/24",
             "metadata": {
-                "description": "CIDR for Trusted Network"
+                "description": "CIDR for Trust Network."
             }
         },
         "loadBalancerIP": {
             "type": "string",
             "metadata": {
-                "description": "IP Address for the outbound load balancer resource in the Trust network."
+                "description": "IP Address for the Internal Load Balancer in front of the Hub VM-Series Firewall."
             },
             "defaultValue": "10.0.2.4"
         },
@@ -67,7 +67,7 @@
         "networkSecurityGroupInboundIP": {
             "type": "string",
             "metadata": {
-                "description": "Your source public IP address. Added to the inbound NSG on eth0 (MGMT), to restrict access to the deployment."
+                 "description": "The IP address that you want to use to access the management interface on the firewall(s). This IP address will be added to the inbound NSG on eth0(MGMT) to restrict access."
             }
         },
         "imageVersion": {
@@ -110,10 +110,17 @@
             },
             "defaultValue": "Standard_D3_v2"
         },
+       "username": {
+            "type": "string",
+            "defaultValue": "pandemo",
+            "metadata": {
+                "description": "The username for the administrator account on the VM-Series firewall."
+            }
+        },
         "authenticationType": {
             "type": "string",
             "metadata": {
-                "description": "Type of administrator user authentication "
+                "description": "The authentication method for the administrator account."
             },
             "allowedValues": [
                 "sshPublicKey",
@@ -121,81 +128,60 @@
             ],
             "defaultValue": "password"
         },
-        "username": {
-            "type": "string",
-            "defaultValue": "pandemo",
-            "metadata": {
-                "description": "Username of the administrator account of VM instances"
-            }
-        },
+ 
         "password": {
             "type": "securestring",
             "defaultValue": "Dem0pa$$w0rd",
             "metadata": {
-                "description": "Password for the administrator account of all VM instances. Must be specified if Authentication Type is 'password'."
+                "description": "The password for the administrator account. Required if Authentication Type is 'password'. Visit https://docs.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-password-requirements-when-creating-a-vm for password requirements"
             }
         },
         "sshPublicKey": {
             "type": "string",
             "defaultValue": " ",
             "metadata": {
-                "description": "SSH RSA public key file as a string. Must be specified if Authentication Type is 'sshPublicKey'."
+                "description": "The SSH RSA public key file as a string. Required if Authentication Type is 'sshPublicKey'."
             }
         },
 		"bootstrapStorageAccount": {
 			"defaultValue": "",
 			"type": "String",
 			"metadata": {
-					"description": "Storage account hosting the bootstrap files"
-				}
+                "description": "The name of the storage account that contains the bootstrap file share."
+			}
 		},
         "bootstrapStorageAccountAccessKey": {
             "type": "securestring",
             "metadata":{
-              "description": "Storage account access key to read blob data privately"
+                "description": "The access key for the bootstrap storage account."
             }
         },
-
 		"bootstrapFileShare": {
 			"defaultValue": "",
 			"type": "String",
 			"metadata": {
-					"description": "The file share in the storage account where the bootstrap files are located"
-				}
+                "description": "The name of the file share that contains the bootstrap folders."
+			}
 		},
 		"bootstrapSharedDir": {
 			"defaultValue": "None",
 			"type": "String",
 			"metadata": {
-					"description": "The subdirectory hosting the bootstrap files. Only required if hosting multiple bootstrap directories on the same share"
-				}
+                "description": "(OPTIONAL) The directory name under file share that contains the bootstrap folders."
+			}
 		},
         "vmScaleSetMinCount": {
             "type": "int",
             "defaultValue": 1,
             "metadata": {
-                "description": "The minimum (and default) number of FWs that will be deployed into the VM Scale Set."
+                "description": "The minimum (and default) number of VM-Series firewall(s) to deploy in the VM Scale Set."
             }
         },
         "vmScaleSetMaxCount": {
             "type": "int",
             "defaultValue": 3,
             "metadata": {
-                "description": "The maximum number of FWs that can be deployed into the VM Scale Set."
-            }
-        },
-        "scaleInThreshold": {
-            "type": "int",
-            "defaultValue": 20,
-            "metadata": {
-                "description": "The Threshold below which FW VM scale in kicks in."
-            }
-        },
-        "scaleOutThreshold": {
-            "type": "int",
-            "defaultValue": 80,
-            "metadata": {
-                "description": "The Threshold above which FW VM scale out kicks in."
+                "description": "The maximum number of VM-Series firewall(s) to deploy in the VM Scale Set."
             }
         },
         "autoScaleMetric": {
@@ -211,10 +197,25 @@
                 ], 
              "defaultValue": "Active Sessions", 
              "metadata": {
-                 "description": "Select the metric on which auto scale events should be triggered."
+                 "description": "Select the metric on which to trigger an auto scale event."
              } 
         },
-        "vmLicenseHandlerUrl": {
+ 
+        "scaleInThreshold": {
+            "type": "int",
+            "defaultValue": 20,
+            "metadata": {
+                "description": "The threshold below which the VM-Series firewall is scaled in."
+            }
+        },
+        "scaleOutThreshold": {
+            "type": "int",
+            "defaultValue": 80,
+            "metadata": {
+                "description": "The threshold above which the VM-Series firewall is scaled out."
+            }
+        },
+       "panoramaPluginMessageHandlerUrl": {
             "type": "string",
             "metadata":{
               "description": "Azure Function handler launched as part of the Service Bus template which handles VM licensing."
@@ -282,7 +283,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[concat(parameters('vmLicenseHandlerUrl'), '&op=PublishCustomMetrics', '&ik=', reference('SetupAppInsights').outputs.instrumentationKey.value, '&subsId=', subscription().subscriptionId, '&rg=', variables('rgname'))]",
+                    "uri": "[concat(parameters('panoramaPluginMessageHandlerUrl'), '&op=PublishCustomMetrics', '&ik=', reference('SetupAppInsights').outputs.instrumentationKey.value, '&subsId=', subscription().subscriptionId, '&rg=', variables('rgname'))]",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters":  {}
@@ -298,7 +299,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[concat(parameters('vmLicenseHandlerUrl'), '&op=NotifyCompletion', '&subsId=', subscription().subscriptionId, '&rg=', variables('rgname'))]",
+                    "uri": "[concat(parameters('panoramaPluginMessageHandlerUrl'), '&op=NotifyCompletion', '&subsId=', subscription().subscriptionId, '&rg=', variables('rgname'))]",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters":  {}
@@ -396,10 +397,10 @@
                         "value": "[parameters('mgmtSubnetPrefix')]"
                     },
                     "untrustSubnetPrefix": {
-                        "value": "[parameters('untrustedSubnetPrefix')]"
+                        "value": "[parameters('untrustSubnetPrefix')]"
                     },
                     "trustSubnetPrefix": {
-                        "value": "[parameters('trustedSubnetPrefix')]"
+                        "value": "[parameters('trustSubnetPrefix')]"
                     }
                 }
             }
@@ -516,7 +517,7 @@
                         "value": "[parameters('scaleOutThreshold')]"
                     },
                     "vmLicenseHandlerUrl": {
-                        "value": "[parameters('vmLicenseHandlerUrl')]"
+                        "value": "[parameters('panoramaPluginMessageHandlerUrl')]"
                     }
                 }
             }

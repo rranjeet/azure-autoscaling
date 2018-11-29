@@ -5,82 +5,71 @@
         "appGatewayDnsName": {
             "type": "string",
             "metadata": {
-                "description": "App Gateway Public IP DNS Name. Must be globally unique."
+                "description": "The DNS name for the internet-facing application. Must be globally unique."
             }
         },
         "networkSecurityGroupInboundSrcIP": {
             "type": "string",
              "metadata": {
-                 "description": "Your source public IP address. Added to the inbound NSG on eth0 (MGMT), to restrict access to the deployment."
+                 "description": "The IP address that you want to use to access the management interface on the firewall(s). This IP address will be added to the inbound NSG on eth0(MGMT) to restrict access."
              }
         },
         "appLoadBalancerIP": {
             "type": "string",
             "metadata": {
-                "description": "IP Address of the Internal Load Balancer fronting the first application that will be onboarded."
-            }
+                "description": "IP Address of the Internal Load Balancer in front of the first application that will be onboarded."
+            },
+            "defaultValue": "1.2.3.4"
         },
         "fwLoadBalancerIP": {
             "type": "string",
             "metadata": {
-                "description": "IP Address of the Internal Load Balancer fronting the firewall"
+                "description": "IP Address of the Internal Load Balancer in front of the firewall."
             }
         },
         "virtualNetworkName": {
             "type": "string",
             "defaultValue": "inbound-fw-vnet",
             "metadata": {
-                "description": "Inbound Firewall Virtual Network Name"
+                "description": "Virtual Network Name of the VM-Series firewall VM Scale Set."
             }
         },
         "virtualNetworkAddressPrefix": {
             "type": "string",
             "defaultValue": "192.168.0.0/21",
             "metadata": {
-                "description": "CIDR for Virtual Network"
+                "description": "CIDR for Virtual Network."
             }
         },
         "mgmtSubnetPrefix": {
             "type": "string",
             "defaultValue": "192.168.0.0/24",
                     "metadata": {
-                        "description": "CIDR for Management Network"
+                        "description": "CIDR for Management Subnet."
                     }
             },
-        "untrustedSubnetPrefix": {
+        "untrustSubnetPrefix": {
             "type": "string",
             "defaultValue": "192.168.1.0/24",
             "metadata": {
-                "description": "CIDR for Untrusted Network"
+                "description": "CIDR for Untrust Subnet."
             }
         },
-        "trustedSubnetPrefix": {
+        "trustSubnetPrefix": {
             "type": "string",
             "defaultValue": "192.168.2.0/24",
             "metadata": {
-                "description": "CIDR for Trusted Network"
+                "description": "CIDR for Trust Subnet."
             }
         },
         "appGatewaySubnetPrefix": {
             "type": "string",
             "defaultValue": "192.168.3.0/24",
             "metadata": {
-                "description": "CIDR for App Gateway"
+                "description": "CIDR for the App Gateway Subnet."
             }
         },
-        "backendVmSize": {
-             "type": "string",
-             "allowedValues": [
-                    "Standard_A1",
-                    "Standard_D1",
-                    "Standard_D1_v2"
-             ],
-             "metadata": {
-                "description": "Azure VM size for backend VMs. Not all sizes are available in all regions."
-             },
-             "defaultValue": "Standard_D1_v2"
-        },
-        "firewallModel": {
+        "vmSeriesFirewallModel": {
              "type": "string",
              "defaultValue": "byol",
              "allowedValues": [
@@ -92,7 +81,7 @@
                  "description": "byol = Bring Your Own License; bundle1 = Bundle 1 PAYG (Hourly); bundle2 = Bundle 2 PAYG (Hourly)"
              }
         },
-        "firewallVmSize": {
+        "vmSeriesFirewallVmSize": {
              "type": "string",
              "allowedValues": [
                     "Standard_D3",
@@ -104,14 +93,14 @@
                     "Standard_A4"
              ],
              "metadata": {
-                "description": "Azure VM size for VM-Series"
+                "description": "Azure VM size for VM-Series firewall."
              },
              "defaultValue": "Standard_D3_v2"
         },
         "storageAccountName": {
             "type": "string",
             "metadata": {
-                "description": "Name of the storage account created to store the VM's disks. Storage account name must be globally unique."
+                "description": "The name of the storage account in which to store the VM-Series firewall disks. Storage account name must be globally unique."
             } 
         },
         "storageAccountType": {
@@ -123,7 +112,7 @@
                 "Standard_RAGRS"
             ],
             "metadata": {
-                "description": "Type of the storage account created"
+                "description": "The storage account type."
             },
             "defaultValue": "Standard_LRS"
         },
@@ -131,13 +120,13 @@
             "type": "string",
             "defaultValue": "pandemo",
             "metadata": {
-                "description": "Username of the administrator account of VM instances"
+                "description": "The username for the administrator account on the VM-Series firewall."
             }
         },
         "authenticationType": {
             "type": "string",
             "metadata": {
-                "description": "Type of administrator user authentication "
+                "description": "The authentication method for the administrator account."
             },
             "allowedValues": [
                 "sshPublicKey",
@@ -149,67 +138,53 @@
             "type": "securestring",
             "defaultValue": "Dem0pa$$w0rd",
             "metadata": {
-                "description": "Password for the administrator account of all VM instances. Must be specified if Authentication Type is 'password'."
+                "description": "The password for the administrator account. Required if Authentication Type is 'password'. Visit https://docs.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-password-requirements-when-creating-a-vm for password requirements"
             }
         },
         "sshPublicKey": {
             "type": "string",
             "defaultValue": "",
             "metadata": {
-                "description": "SSH RSA public key file as a string. Must be specified if Authentication Type is 'sshPublicKey'."
+                "description": "The SSH RSA public key file as a string. Required if Authentication Type is 'sshPublicKey'."
             }
         },
         "bootstrapStorageAccount": {
             "type": "string",
             "metadata":{
-              "description": "Storage account containing bootstrap data"
+              "description": "The name of the storage account that contains the bootstrap file share."
             }
         },
         "bootstrapStorageAccountAccessKey": {
             "type": "securestring",
             "metadata":{
-              "description": "Storage account access key to read blob data privately"
+              "description": "The access key for the bootstrap storage account."
             }
         },
         "bootstrapFileShare": {
             "type": "string",
             "metadata":{
-                "description": "File Share containing bootstrap files"
+                "description": "The name of the file share that contains the bootstrap folders."
             }
         },
         "bootstrapSharedDir": {
             "type": "string",
             "defaultValue": "None",
             "metadata":{
-                    "description": "(OPTIONAL) Directory name under File Share containing bootstrap files"
+                    "description": "(OPTIONAL) The directory name under file share that contains the bootstrap folders."
             }   
         },
         "vmScaleSetMinCount": {
             "type": "int",
             "defaultValue": 1,
             "metadata": {
-                "description": "The minimum (and default) number of FWs that will be deployed into the VM Scale Set."
+                "description": "The minimum (and default) number of VM-Series firewall(s) to deploy in the VM Scale Set."
             }
         },
         "vmScaleSetMaxCount": {
             "type": "int",
             "defaultValue": 3,
             "metadata": {
-                "description": "The maximum number of FWs that can be deployed into the VM Scale Set."
-            }
-        },
-        "scaleInThreshold": {
-            "type": "int",
-            "defaultValue": 20,
-            "metadata": {
-                "description": "The Threshold below which FW VM scale in kicks in."
-            }
-        },
-        "scaleOutThreshold": {
-            "type": "int",
-            "defaultValue": 80,
-            "metadata": {
-                "description": "The Threshold above which FW VM scale out kicks in."
+                "description": "The maximum number of VM-Series firewall(s) to deploy in the VM Scale Set."
             }
         },
         "autoScaleMetric": {
@@ -225,13 +200,27 @@
                 ], 
              "defaultValue": "Active Sessions", 
              "metadata": {
-                 "description": "Select the metric on which auto scale events should be triggered."
+                 "description": "Select the metric on which to trigger an auto scale event."
              } 
         },
-        "vmLicenseHandlerUrl": {
+        "scaleInThreshold": {
+            "type": "int",
+            "defaultValue": 20,
+            "metadata": {
+                "description": "The threshold below which the VM-Series firewall is scaled in."
+            }
+        },
+        "scaleOutThreshold": {
+            "type": "int",
+            "defaultValue": 80,
+            "metadata": {
+                "description": "The threshold above which the VM-Series firewall is scaled out."
+            }
+        },
+        "panoramaPluginMessageHandlerUrl": {
             "type": "string",
             "metadata":{
-              "description": "Azure Function handler launched as part of the Service Bus template which handles VM licensing."
+              "description": "The Azure Function URL that was created when you launched the Service Bus infrastructure template."
             }
         }
     },
@@ -298,7 +287,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[concat(parameters('vmLicenseHandlerUrl'), '&op=PublishCustomMetrics', '&ik=', reference('SetupAppInsights').outputs.instrumentationKey.value, '&subsId=', subscription().subscriptionId, '&rg=', variables('rgname'))]",
+                    "uri": "[concat(parameters('panoramaPluginMessageHandlerUrl'), '&op=PublishCustomMetrics', '&ik=', reference('SetupAppInsights').outputs.instrumentationKey.value, '&subsId=', subscription().subscriptionId, '&rg=', variables('rgname'))]",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters":  {}
@@ -314,7 +303,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[concat(parameters('vmLicenseHandlerUrl'), '&op=NotifyCompletion', '&subsId=', subscription().subscriptionId, '&rg=', variables('rgname'))]",
+                    "uri": "[concat(parameters('panoramaPluginMessageHandlerUrl'), '&op=NotifyCompletion', '&subsId=', subscription().subscriptionId, '&rg=', variables('rgname'))]",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters":  {}
@@ -416,10 +405,10 @@
                          "value": "[parameters('mgmtSubnetPrefix')]"
                     },
                     "subnet1Prefix": {
-                         "value": "[parameters('untrustedSubnetPrefix')]"
+                         "value": "[parameters('untrustSubnetPrefix')]"
                     },
                     "subnet2Prefix": {
-                         "value": "[parameters('trustedSubnetPrefix')]"
+                         "value": "[parameters('trustSubnetPrefix')]"
                     },
                     "subnetLBPrefix": {
                          "value": "[parameters('appGatewaySubnetPrefix')]"
@@ -579,7 +568,7 @@
                         "value": "[variables('vmssName')]"
                     },
                     "vmSize": {
-                         "value": "[parameters('firewallVmSize')]"
+                         "value": "[parameters('vmSeriesFirewallVmSize')]"
                     },
                     "vmScaleSetMinCount": {
                         "value": "[parameters('vmScaleSetMinCount')]"
@@ -588,7 +577,7 @@
                         "value": "[parameters('vmScaleSetMaxCount')]"
                     },
                     "vmSku": {
-                         "value": "[parameters('firewallModel')]"
+                         "value": "[parameters('vmSeriesFirewallModel')]"
                     },
                     "adminUsername": {
                          "value": "[parameters('username')]"
@@ -630,7 +619,7 @@
                         "value": "[parameters('scaleOutThreshold')]"
                     },
                     "vmLicenseHandlerUrl": {
-                        "value": "[parameters('vmLicenseHandlerUrl')]"
+                        "value": "[parameters('panoramaPluginMessageHandlerUrl')]"
                     }
                 }
              }
