@@ -24,7 +24,7 @@
         "fwLoadBalancerIP": {
             "type": "string",
             "metadata": {
-                "description": "IP Address of the Internal Load Balancer in front of the firewall."
+                "description": "IP Address of the Internal Load Balancer in front of the firewall. This should be an IP in the Untrust subnet."
             }
         },
         "virtualNetworkName": {
