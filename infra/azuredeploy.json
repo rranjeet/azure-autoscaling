@@ -46,14 +46,14 @@
         "location" : "[resourceGroup().location]",
         "functionAppName": "[parameters('panoramaPluginMessageHandlerName')]",
         "namingInfix": "[substring(uniqueString(resourceGroup().id), 0, 5)]",
-        "hostingPlanName": "[concat(parameters('appName'), '-plan')]",
+        "hostingPlanName": "[concat(parameters('panoramaPluginMessageHandlerName'), '-plan')]",
         "storageAccountName": "[concat(uniquestring(resourceGroup().id), 'functions')]",
         "RootManageSharedAccessKey_name": "RootManageSharedAccessKey",
         "serviceBusApiVersion": "2014-09-01",
         "baseUrl" : "https://raw.githubusercontent.com/rranjeet/azure-autoscaling/master/infra/",
         "serviceBusUrl": "[concat(variables('baseUrl'), 'deployServiceBus.json')]",
         "functionHostingPlan": "Basic",
-        "appInsightsInstancename": "[concat(parameters('appName'), '-appinsights-', variables('namingInfix'))]",
+        "appInsightsInstancename": "[concat(parameters('panoramaPluginMessageHandlerName'), '-appinsights-', variables('namingInfix'))]",
         "workerSize": "0"
     },
     "resources": [
@@ -114,10 +114,10 @@
             "type": "microsoft.insights/components",
             "location": "East US",
             "tags": {
-                "[concat('hidden-link:', resourceGroup().id, '/providers/Microsoft.Web/sites/', parameters('appName'))]": "Resource"
+                "[concat('hidden-link:', resourceGroup().id, '/providers/Microsoft.Web/sites/', parameters('panoramaPluginMessageHandlerName'))]": "Resource"
             },
             "properties": {
-                "ApplicationId": "[parameters('appName')]",
+                "ApplicationId": "[parameters('panoramaPluginMessageHandlerName')]",
                 "Request_Source": "IbizaWebAppExtensionCreate"
             }
         },
@@ -162,7 +162,7 @@
                         },
                         {
                             "name": "WEBSITE_CONTENTSHARE",
-                            "value": "[concat(toLower(parameters('appName')), '887c')]"
+                            "value": "[concat(toLower(parameters('panoramaPluginMessageHandlerName')), '887c')]"
                         },
                         {
                             "name": "WEBSITE_NODE_DEFAULT_VERSION",
