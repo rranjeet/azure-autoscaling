@@ -539,7 +539,7 @@
                         "value": "[parameters('vmSeriesFirewallModel')]"
                     },
                     "imageVersion": { 
-                        "value": "[parameters('vmSeriesImageVersion)]"
+                        "value": "[parameters('vmSeriesImageVersion')]"
                     },
                     "adminUsername": {
                          "value": "[parameters('username')]"

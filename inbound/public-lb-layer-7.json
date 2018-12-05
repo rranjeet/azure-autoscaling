@@ -121,12 +121,7 @@
                 ],
                 "backendAddressPools": [
                     {
-                        "name": "[parameters('appGwBackendPoolName')]",
-                        "properties": {
-                                {
-                                }
-                            ]
-                        }
+                        "name": "[parameters('appGwBackendPoolName')]"
                     }
                 ],
                 "backendHttpSettingsCollection": [
