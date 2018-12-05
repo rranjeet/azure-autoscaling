@@ -54,12 +54,6 @@
             "metadata": {
                 "description": "Backend Pool Name for the App Gateway"
             }
-        },
-        "appGwBackendPoolIP": {
-            "type": "string",
-            "metadata": {
-                "description": "Backend Pool IP of the ILB for the App Gateway"
-            }
         }
     },
     "variables": {
@@ -129,9 +123,7 @@
                     {
                         "name": "[parameters('appGwBackendPoolName')]",
                         "properties": {
-                            "backendAddresses": [
                                 {
-                                    "ipAddress": "[parameters('appGwBackendPoolIP')]"
                                 }
                             ]
                         }

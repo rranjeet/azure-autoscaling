@@ -14,13 +14,6 @@
                  "description": "The IP address that you want to use to access the management interface on the firewall(s). This IP address will be added to the inbound NSG on eth0(MGMT) to restrict access."
              }
         },
-        "appLoadBalancerIP": {
-            "type": "string",
-            "metadata": {
-                "description": "IP Address of the Internal Load Balancer in front of the first application that will be onboarded. Ignore this if you have not planned your application deployment yet."
-            },
-            "defaultValue": "dummy"
-        },
         "fwLoadBalancerIP": {
             "type": "string",
             "metadata": {
@@ -80,6 +73,18 @@
              "metadata": {
                  "description": "byol = Bring Your Own License; bundle1 = Bundle 1 PAYG (Hourly); bundle2 = Bundle 2 PAYG (Hourly)"
              }
+        },
+        "vmSeriesImageVersion": {
+            "type": "string",
+            "allowedValues": [
+                "latest",
+                "8.1.0",
+                "8.0.0"
+            ],
+            "defaultValue": "latest",
+            "metadata": {
+                "description": "PAN OS Version"
+            }
         },
         "vmSeriesFirewallVmSize": {
              "type": "string",
@@ -337,7 +342,7 @@
                         "value": "[variables('udrName')]"
                     },
                     "subnetPrefix": {
-                         "value": "[concat(parameters('appLoadBalancerIP'), '/32')]"
+                         "value": "0.0.0.0/0"
                     },
                     "nextHopIP": {
                          "value": "[parameters('fwLoadBalancerIP')]"
@@ -427,9 +432,6 @@
                     },
                     "appGwBackendPoolName": {
                         "value": "[variables('appGwBackendPoolName')]"
-                    },
-                    "appGwBackendPoolIP": {
-                        "value": "[parameters('appLoadBalancerIP')]"
                     }
                 }
             }
@@ -534,7 +536,10 @@
                         "value": "[parameters('vmScaleSetMaxCount')]"
                     },
                     "vmSku": {
-                         "value": "[parameters('vmSeriesFirewallModel')]"
+                        "value": "[parameters('vmSeriesFirewallModel')]"
+                    },
+                    "imageVersion": { 
+                        "value": "[parameters('vmSeriesImageVersion)]"
                     },
                     "adminUsername": {
                          "value": "[parameters('username')]"
