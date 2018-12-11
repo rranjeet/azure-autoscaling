@@ -233,8 +233,6 @@
         "computeApiVersion": "2017-03-30",
         "appInsightsName": "[concat(variables('rgname'), '-appinsights-', variables('namingInfix'))]",
         "appInsightsUrl": "[concat(variables('baseUrl'),'/deployAppInsights.json')]",
-        "nicNameWorker": "[concat('tempworkernic', variables('namingInfix'))]",
-        "workerName": "[concat('tempworker', variables('namingInfix'))]",
         "appGatewayName": "[concat(variables('rgname'), '_appgw_', variables('namingInfix'))]",
         "fwLbName": "[concat(variables('rgname'), '_fw_lb_', variables('namingInfix'))]", 
         "appGwBackendPoolName": "[concat(variables('rgname'), '_appGwBepool_', variables('namingInfix'))]",

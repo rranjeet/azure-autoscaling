@@ -1,0 +1,114 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "applyUdr": {
+            "type": "string",
+            "defaultValue": "No",
+            "metadata": {
+                "description": "Associate a UDR to the subnet."
+            }
+        },
+        "udrName": {
+            "type": "string",
+            "defaultValue": "defaultUdrName",
+            "metadata": {
+                "description": "Name of the UDR"
+            }
+        },
+        "applyNsg": {
+            "type": "string",
+            "defaultValue": "No",
+            "metadata": {
+                "description": "Associate a security group with the subnet."
+            }
+        },
+        "nsgName": {
+            "type": "string",
+            "defaultValue": "defaultNsgName",
+            "metadata": {
+                "description": "Name of the Network security group"
+            }
+        },
+        "existingVNETName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the VNET to add a subnet to"
+            }
+        },
+        "subnetName": {
+            "type": "string",
+            "metadata": {
+                "description": "Subnet Name"
+            }
+        },
+        "subnetAddressPrefix": {
+            "type": "string",
+            "metadata": {
+                "description": "CIDR of the subnet"
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+                "description": "Location"
+            }
+        }
+    },
+    "resources": [
+        {
+            "condition": "[equals(parameters('applyNsg'), 'No') and equals(parameters('applyUdr'), 'No')]",
+            "apiVersion": "2018-04-01",
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "name": "[concat(parameters('existingVNETName'), '/', parameters('subnetName'))]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "addressPrefix": "[parameters('subnetAddressPrefix')]"
+            }
+        },
+        {
+            "condition": "[equals(parameters('applyNsg'), 'No') and equals(parameters('applyUdr'), 'Yes')]",
+            "apiVersion": "2018-04-01",
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "name": "[concat(parameters('existingVNETName'), '/', parameters('subnetName'))]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "addressPrefix": "[parameters('subnetAddressPrefix')]",
+                "routeTable": {
+                    "id": "[resourceId('Microsoft.Network/routeTables', parameters('udrName'))]"
+                }
+            }
+        },
+        {
+            "condition": "[equals(parameters('applyNsg'), 'Yes') and equals(parameters('applyUdr'), 'No')]",
+            "apiVersion": "2018-04-01",
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "name": "[concat(parameters('existingVNETName'), '/', parameters('subnetName'))]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "addressPrefix": "[parameters('subnetAddressPrefix')]",
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsgName'))]"
+                }
+            }
+        },
+        {
+            "condition": "[equals(parameters('applyNsg'), 'Yes') and equals(parameters('applyUdr'), 'Yes')]",
+            "apiVersion": "2018-04-01",
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "name": "[concat(parameters('existingVNETName'), '/', parameters('subnetName'))]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "addressPrefix": "[parameters('subnetAddressPrefix')]",
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsgName'))]"
+                },
+                "routeTable": {
+                    "id": "[resourceId('Microsoft.Network/routeTables', parameters('udrName'))]"
+                }
+            }
+        }
+    ],
+    "outputs": {}
+}
