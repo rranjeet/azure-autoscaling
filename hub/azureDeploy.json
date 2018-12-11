@@ -44,26 +44,6 @@
             },
             "defaultValue": "10.0.2.4"
         },
- 
-        "storageName": {
-            "type": "string",
-            "metadata": {
-                "description": "Name of the storage account created to store the VM's disks.  Storage account name must be globally unique."
-            }
-        },
-        "storageType": {
-            "type": "string",
-            "allowedValues": [
-                "Standard_LRS",
-                "Standard_GRS",
-                "Premium_LRS",
-                "Standard_RAGRS"
-            ],
-            "metadata": {
-                "description": "Type of the storage account created"
-            },
-            "defaultValue": "Standard_LRS"
-        },
         "networkSecurityGroupInboundIP": {
             "type": "string",
             "metadata": {
@@ -225,7 +205,6 @@
     
     "variables": {
         "baseUrl" : "https://raw.githubusercontent.com/rranjeet/azure-autoscaling/master/hub",
-        "deployStorageURL"     : "[concat(variables('baseUrl'),'/deployStorage.json')]",
         "deployNsgURL"         : "[concat(variables('baseUrl'),'/deployNsg.json')]",
         "deployVnetURL"        : "[concat(variables('baseUrl'),'/deployVnet.json')]",
         "deployLoadBalancerURL": "[concat(variables('baseUrl'),'/deployLoadBalancer.json')]",
@@ -238,7 +217,6 @@
         "namingInfix": "[substring(uniqueString(resourceGroup().id), 0, 5)]",
         "location"   : "[resourceGroup().location]",
         "rgname"     : "[resourceGroup().name]",
-        "storageName": "[toLower(parameters('storageName'))]",
         "networkSecurityGroupName": "[concat(variables('rgname'), '-nsg' )]",
         "hubLoadBalancerSku": "Standard",
         "vmssName": "[concat('pavmfw', variables('namingInfix'))]",
@@ -306,37 +284,10 @@
             }
         },
         {    
-            "name": "deployStorage",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2015-01-01",
-            "dependsOn": [
-                "Microsoft.Resources/deployments/PublishCustomMetrics"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('deployStorageURL')]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "location": {
-                        "value": "[variables('location')]"
-                    },
-                    "storageType": {
-                        "value": "[parameters('storageType')]"
-                    },
-                    "storageName": {
-                        "value": "[variables('storageName')]"
-                    }
-                }
-            }
-        },
-        {    
             "name": "deployNsg",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2015-01-01",
             "dependsOn": [
-                "Microsoft.Resources/deployments/deployStorage"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -365,8 +316,7 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2015-01-01",
             "dependsOn": [
-                "Microsoft.Resources/deployments/deployNsg",
-                "Microsoft.Resources/deployments/deployStorage"
+                "Microsoft.Resources/deployments/deployNsg"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -451,7 +401,6 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2015-01-01",
             "dependsOn": [
-                "Microsoft.Resources/deployments/deployStorage",
                 "Microsoft.Resources/deployments/deployVNet",
                 "Microsoft.Resources/deployments/deployOutboundLoadBalancer"
             ],

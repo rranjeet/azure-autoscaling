@@ -93,37 +93,6 @@
                 "description": "CIDR for Backend WWW Network"
             }
         },
-        "backendVmSize": {
-             "type": "string",
-             "allowedValues": [
-                    "Standard_A1",
-                    "Standard_D1",
-                    "Standard_D1_v2"
-             ],
-             "metadata": {
-                "description": "Azure VM size for backend VMs. Not all sizes are available in all regions."
-             },
-             "defaultValue": "Standard_D1_v2"
-        },
-        "storageAccountName": {
-            "type": "string",
-            "metadata": {
-                "description": "Name of the storage account created to store the VM's disks. Storage account name must be globally unique."
-            } 
-        },
-        "storageAccountType": {
-            "type": "string",
-            "allowedValues": [
-                "Standard_LRS",
-                "Standard_GRS",
-                "Premium_LRS",
-                "Standard_RAGRS"
-            ],
-            "metadata": {
-                "description": "Type of the storage account created"
-            },
-            "defaultValue": "Standard_LRS"
-        },
         "username": {
             "type": "string",
             "defaultValue": "pandemo",
@@ -143,6 +112,8 @@
         "location" : "[resourceGroup().location]",
         "namingInfix": "[substring(uniqueString(resourceGroup().id), 0, 5)]",
         "rgname" : "[resourceGroup().name]",
+        "storageAccountName": "[concat(variables('rgname'), '-storage-acct-', variables('namingInfix'))]",
+        "storageAccountType": "Standard_LRS",
         "networkSecurityGroupName" : "[concat(variables('rgname'), '-mgmt-nsg-', variables('namingInfix'))]",
         "trustedSubnetName" : "[concat(parameters('virtualNetworkName'), '-trust-subnet')]",
         "backendSubnetName" : "[concat(parameters('virtualNetworkName'), '-backend-subnet')]",
@@ -300,10 +271,10 @@
                         "value": "[variables('location')]"
                     },
                     "storageAccountType": {
-                        "value": "[parameters('storageAccountType')]"
+                        "value": "[variables('storageAccountType')]"
                     },
                     "storageAccountName": {
-                        "value": "[parameters('storageAccountName')]"
+                        "value": "[variables('storageAccountName')]"
                     }
                 }
             }
@@ -350,7 +321,7 @@
                          "value": "[variables('trustedSubnetName')]"
                     },
                     "vmSize": {
-                         "value": "[parameters('backendVmSize')]"
+                         "value": "Standard_D1_v2"
                     },
                     "baseUrl": {
                          "value": "[variables('baseUrl')]"
