@@ -112,7 +112,7 @@
         "location" : "[resourceGroup().location]",
         "namingInfix": "[substring(uniqueString(resourceGroup().id), 0, 5)]",
         "rgname" : "[resourceGroup().name]",
-        "storageAccountName": "[concat(variables('rgname'), '-storage-acct-', variables('namingInfix'))]",
+        "storageAccountName": "[concat('storageacct', variables('namingInfix'))]",
         "storageAccountType": "Standard_LRS",
         "networkSecurityGroupName" : "[concat(variables('rgname'), '-mgmt-nsg-', variables('namingInfix'))]",
         "trustedSubnetName" : "[concat(parameters('virtualNetworkName'), '-trust-subnet')]",
