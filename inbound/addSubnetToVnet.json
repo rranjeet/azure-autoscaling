@@ -58,7 +58,7 @@
     },
     "resources": [
         {
-            "condition": "[equals(parameters('applyNsg'), 'No') and equals(parameters('applyUdr'), 'No')]",
+            "condition": "[if(equals(parameters('applyNsg'), 'No') and equals(parameters('applyUdr'), 'No')), bool('true'), bool('false')]",
             "apiVersion": "2018-04-01",
             "type": "Microsoft.Network/virtualNetworks/subnets",
             "name": "[concat(parameters('existingVNETName'), '/', parameters('subnetName'))]",
@@ -68,7 +68,7 @@
             }
         },
         {
-            "condition": "[equals(parameters('applyNsg'), 'No') and equals(parameters('applyUdr'), 'Yes')]",
+            "condition": "[if(equals(parameters('applyNsg'), 'No') and equals(parameters('applyUdr'), 'Yes')), bool('true'), bool('false')]",
             "apiVersion": "2018-04-01",
             "type": "Microsoft.Network/virtualNetworks/subnets",
             "name": "[concat(parameters('existingVNETName'), '/', parameters('subnetName'))]",
@@ -81,7 +81,7 @@
             }
         },
         {
-            "condition": "[equals(parameters('applyNsg'), 'Yes') and equals(parameters('applyUdr'), 'No')]",
+            "condition": "[if(equals(parameters('applyNsg'), 'Yes') and equals(parameters('applyUdr'), 'No')), bool('true'), bool('false')]",
             "apiVersion": "2018-04-01",
             "type": "Microsoft.Network/virtualNetworks/subnets",
             "name": "[concat(parameters('existingVNETName'), '/', parameters('subnetName'))]",
@@ -94,7 +94,7 @@
             }
         },
         {
-            "condition": "[equals(parameters('applyNsg'), 'Yes') and equals(parameters('applyUdr'), 'Yes')]",
+            "condition": "[if(equals(parameters('applyNsg'), 'Yes') and equals(parameters('applyUdr'), 'Yes')), bool('true'), bool('false')]",
             "apiVersion": "2018-04-01",
             "type": "Microsoft.Network/virtualNetworks/subnets",
             "name": "[concat(parameters('existingVNETName'), '/', parameters('subnetName'))]",
