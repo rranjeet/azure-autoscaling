@@ -49,7 +49,7 @@
         },
         "appGatewayDnsName": {
             "type": "string",
-            "default": "AppFrontendDnsName",
+            "defaultValue": "AppFrontendDnsName",
             "metadata": {
                 "description": "The DNS name for the internet-facing application if you want to deploy one. Must be globally unique."
             }
@@ -236,7 +236,7 @@
         "nsgURL" : "[concat(variables('baseUrl'),'/nsg-new.json')]",
         "publicLBURL" : "[concat(variables('baseUrl'),'/public-lb-', variables('LoadBalancerType'), '.json')]",
         "defaultUdrSetupURL": "[concat(variables('baseUrl'), '/deployDefaultUDR.json')]",
-        "vnetURL": "[concat(variables('baseUrl'), '/.addSubnetToVnet.json')]",
+        "vnetURL": "[concat(variables('baseUrl'), '/addSubnetToVnet.json')]",
         "vmseriesURL" : "[concat(variables('baseUrl'),'/vmseries.json')]",
         "appInsightsApiVersion": "2018-05-01", 
         "appInsightsComponentsApiVersion": "2018-05-01",
