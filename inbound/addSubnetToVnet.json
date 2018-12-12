@@ -2,13 +2,6 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "applyUdr": {
-            "type": "string",
-            "defaultValue": "No",
-            "metadata": {
-                "description": "Associate a UDR to the subnet."
-            }
-        },
         "udrName": {
             "type": "string",
             "defaultValue": "defaultUdrName",
@@ -16,9 +9,9 @@
                 "description": "Name of the UDR"
             }
         },
-        "applyNsg": {
+        "applyNsgUdr": {
             "type": "string",
-            "defaultValue": "No",
+            "defaultValue": "No No",
             "metadata": {
                 "description": "Associate a security group with the subnet."
             }
@@ -58,7 +51,7 @@
     },
     "resources": [
         {
-            "condition": "[if(equals(parameters('applyNsg'), 'No') and equals(parameters('applyUdr'), 'No'), bool('true'), bool('false'))]",
+            "condition": "[equals(parameters('applyNsgUdr'), 'No No')]",
             "apiVersion": "2018-04-01",
             "type": "Microsoft.Network/virtualNetworks/subnets",
             "name": "[concat(parameters('existingVNETName'), '/', parameters('subnetName'))]",
@@ -68,7 +61,7 @@
             }
         },
         {
-            "condition": "[if(equals(parameters('applyNsg'), 'No') and equals(parameters('applyUdr'), 'Yes'), bool('true'), bool('false'))]",
+            "condition": "[equals(parameters('applyNsgUdr'), 'No Yes')]",
             "apiVersion": "2018-04-01",
             "type": "Microsoft.Network/virtualNetworks/subnets",
             "name": "[concat(parameters('existingVNETName'), '/', parameters('subnetName'))]",
@@ -81,7 +74,7 @@
             }
         },
         {
-            "condition": "[if(equals(parameters('applyNsg'), 'Yes') and equals(parameters('applyUdr'), 'No'), bool('true'), bool('false'))]",
+            "condition": "[equals(parameters('applyNsgUdr'), 'Yes No')]",
             "apiVersion": "2018-04-01",
             "type": "Microsoft.Network/virtualNetworks/subnets",
             "name": "[concat(parameters('existingVNETName'), '/', parameters('subnetName'))]",
@@ -94,7 +87,7 @@
             }
         },
         {
-            "condition": "[if(equals(parameters('applyNsg'), 'Yes') and equals(parameters('applyUdr'), 'Yes'), bool('true'), bool('false'))]",
+            "condition": "[equals(parameters('applyNsgUdr'), 'Yes Yes')]",
             "apiVersion": "2018-04-01",
             "type": "Microsoft.Network/virtualNetworks/subnets",
             "name": "[concat(parameters('existingVNETName'), '/', parameters('subnetName'))]",
