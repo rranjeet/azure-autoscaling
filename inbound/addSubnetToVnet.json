@@ -51,6 +51,30 @@
     },
     "resources": [
         {
+            "condition": "[equals(parameters('applyNsgUdr'), 'No No')]",
+            "apiVersion": "2018-04-01",
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "name": "[concat(parameters('existingVNETName'), '/', parameters('subnetName'))]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "addressPrefix": "[parameters('subnetAddressPrefix')]"
+            }
+        },
+        {
+            "condition": "[equals(parameters('applyNsgUdr'), 'No Yes')]",
+            "apiVersion": "2018-04-01",
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "name": "[concat(parameters('existingVNETName'), '/', parameters('subnetName'))]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "addressPrefix": "[parameters('subnetAddressPrefix')]",
+                "routeTable": {
+                    "id": "[resourceId('Microsoft.Network/routeTables', parameters('udrName'))]"
+                }
+            }
+        },
+        {
+            "condition": "[equals(parameters('applyNsgUdr'), 'Yes No')]",
             "apiVersion": "2018-04-01",
             "type": "Microsoft.Network/virtualNetworks/subnets",
             "name": "[concat(parameters('existingVNETName'), '/', parameters('subnetName'))]",
@@ -58,10 +82,23 @@
             "properties": {
                 "addressPrefix": "[parameters('subnetAddressPrefix')]",
                 "networkSecurityGroup": {
-                    "id": "[json('null')]"
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsgName'))]"
+                }
+            }
+        },
+        {
+            "condition": "[equals(parameters('applyNsgUdr'), 'Yes Yes')]",
+            "apiVersion": "2018-04-01",
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "name": "[concat(parameters('existingVNETName'), '/', parameters('subnetName'))]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "addressPrefix": "[parameters('subnetAddressPrefix')]",
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsgName'))]"
                 },
                 "routeTable": {
-                    "id": "[json('null')]"
+                    "id": "[resourceId('Microsoft.Network/routeTables', parameters('udrName'))]"
                 }
             }
         }
