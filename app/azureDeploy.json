@@ -328,6 +328,9 @@
                     },
                     "inboundFirewallResourceGroupName": {
                          "value": "[parameters('inboundFirewallResourceGroupName')]"
+                    },
+                    "hubFirewallResourceGroupName": {
+                         "value": "[parameters('hubResourceGroupName')]"
                     }
                 }
              }
