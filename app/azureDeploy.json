@@ -31,7 +31,7 @@
             "metadata": {
                 "description": "IP Address of the outbound Load Balancer in the hub, if the app is going to be connected to a firewall."
             },
-            "defaultValue": "1.2.3.4"
+            "defaultValue": "172.16.2.4"
         },
         "applicationLoadBalancerIP": {
             "type": "string",
@@ -70,13 +70,6 @@
             "defaultValue": "10.0.0.0/16",
             "metadata": {
                 "description": "CIDR for Virtual Network"
-            }
-        },
-        "mgmtSubnetPrefix": {
-            "type": "string",
-            "defaultValue": "10.0.0.0/24",
-            "metadata": {
-                "description": "CIDR for Management Network"
             }
         },
         "trustedSubnetPrefix": {
@@ -118,7 +111,7 @@
         "trustedSubnetName" : "[concat(parameters('virtualNetworkName'), '-trust-subnet')]",
         "backendSubnetName" : "[concat(parameters('virtualNetworkName'), '-backend-subnet')]",
         "internalLoadBalancerName" : "myPrivateLB",
-        "baseUrl" : "https://raw.githubusercontent.com/rranjeet/azure-autoscaling/master/app",
+        "baseUrl" : "https://raw.githubusercontent.com/PaloAltoNetworks/azure-autoscaling/master/Version-1-0/app",
         "nsgURL" : "[concat(variables('baseUrl'),'/nsg-new.json')]",
         "appVnetURL" : "[concat(variables('baseUrl'),'/deployAppVnet.json')]",
         "privateLBURL" : "[concat(variables('baseUrl'),'/private-lb-password.json')]",

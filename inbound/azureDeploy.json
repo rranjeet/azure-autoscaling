@@ -1,6 +1,7 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
+
     "parameters": {
         "appGatewayDnsName": {
             "type": "string",
@@ -19,6 +20,17 @@
             "metadata": {
                 "description": "IP Address of the Internal Load Balancer in front of the firewall. This should be an IP in the Untrust subnet."
             }
+        },
+        "deployIntoExistingVnet": {
+             "type": "string",
+             "defaultValue": "No",
+             "allowedValues": [
+                    "Yes",
+                    "No"
+             ],
+             "metadata": {
+                 "description": "If yes, then the template will deploy just the VM-Series firewall and not the app-gw."
+             }
         },
         "virtualNetworkName": {
             "type": "string",
@@ -78,8 +90,7 @@
             "type": "string",
             "allowedValues": [
                 "latest",
-                "8.1.0",
-                "8.0.0"
+                "8.1.0"
             ],
             "defaultValue": "latest",
             "metadata": {
@@ -89,13 +100,21 @@
         "vmSeriesFirewallVmSize": {
              "type": "string",
              "allowedValues": [
-                    "Standard_D3",
-                    "Standard_D4",
-                    "Standard_D3_v2",
-                    "Standard_D4_v2",
-                    "Standard_D5_v2",
-                    "Standard_D14_v2",
-                    "Standard_A4"
+                "Standard_D3",
+                "Standard_D4",
+                "Standard_D3_v2",
+                "Standard_D4_v2",
+                "Standard_D5_v2",
+                "Standard_D3_v3",
+                "Standard_D4_v3",
+                "Standard_D16_v3",
+                "Standard_DS3_v2",
+                "Standard_DS4_v2",
+                "Standard_DS5_v2",
+                "Standard_DS3_v3",
+                "Standard_DS4_v3",
+                "Standard_DS16_v3",
+                "Standard_A4" 
              ],
              "metadata": {
                 "description": "Azure VM size for VM-Series firewall."
@@ -109,29 +128,11 @@
                 "description": "The username for the administrator account on the VM-Series firewall."
             }
         },
-        "authenticationType": {
-            "type": "string",
-            "metadata": {
-                "description": "The authentication method for the administrator account."
-            },
-            "allowedValues": [
-                "sshPublicKey",
-                "password"
-            ],
-            "defaultValue": "password"
-        },
         "password": {
             "type": "securestring",
             "defaultValue": "Dem0pa$$w0rd",
             "metadata": {
                 "description": "The password for the administrator account. Required if Authentication Type is 'password'. Visit https://docs.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-password-requirements-when-creating-a-vm for password requirements"
-            }
-        },
-        "sshPublicKey": {
-            "type": "string",
-            "defaultValue": "",
-            "metadata": {
-                "description": "The SSH RSA public key file as a string. Required if Authentication Type is 'sshPublicKey'."
             }
         },
         "bootstrapStorageAccount": {
@@ -221,11 +222,12 @@
         "appGatewaySubnetName" : "[concat(parameters('virtualNetworkName'), '-appgw-subnet')]",
         "LoadBalancerType" : "layer-7",
         "firewallVmCount" : 2,
-        "baseUrl" : "https://raw.githubusercontent.com/rranjeet/azure-autoscaling/master/inbound",
+        "baseUrl" : "https://raw.githubusercontent.com/rranjeet/azure-autoscaling/master/",
         "nsgURL" : "[concat(variables('baseUrl'),'/nsg-new.json')]",
         "vnetURL" : "[concat(variables('baseUrl'),'/deployVnet.json')]",
         "publicLBURL" : "[concat(variables('baseUrl'),'/public-lb-', variables('LoadBalancerType'), '.json')]",
         "defaultUdrSetupURL": "[concat(variables('baseUrl'), '/deployDefaultUDR.json')]",
+        "defaultEmptyUdrSetupURL": "[concat(variables('baseUrl'), '/deployEmptyUDR.json')]",
         "vmseriesURL" : "[concat(variables('baseUrl'),'/vmseries.json')]",
         "appInsightsApiVersion": "2018-05-01", 
         "appInsightsComponentsApiVersion": "2018-05-01",
@@ -233,6 +235,8 @@
         "computeApiVersion": "2017-03-30",
         "appInsightsName": "[concat(variables('rgname'), '-appinsights-', variables('namingInfix'))]",
         "appInsightsUrl": "[concat(variables('baseUrl'),'/deployAppInsights.json')]",
+        "nicNameWorker": "[concat('tempworkernic', variables('namingInfix'))]",
+        "workerName": "[concat('tempworker', variables('namingInfix'))]",
         "appGatewayName": "[concat(variables('rgname'), '_appgw_', variables('namingInfix'))]",
         "fwLbName": "[concat(variables('rgname'), '_fw_lb_', variables('namingInfix'))]", 
         "appGwBackendPoolName": "[concat(variables('rgname'), '_appGwBepool_', variables('namingInfix'))]",
@@ -323,6 +327,7 @@
             }
         },
         {
+            "condition": "[equals(parameters('deployIntoExistingVnet'), 'No')]",
             "name": "SetupDefaultUDR",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2015-01-01",
@@ -332,18 +337,12 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[variables('defaultUdrSetupURL')]",
+                    "uri": "[variables('defaultEmptyUdrSetupURL')]",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
                     "udrName": {
                         "value": "[variables('udrName')]"
-                    },
-                    "subnetPrefix": {
-                         "value": "0.0.0.0/0"
-                    },
-                    "nextHopIP": {
-                         "value": "[parameters('fwLoadBalancerIP')]"
                     }
                 }
             }
@@ -398,11 +397,14 @@
                     },
                     "udrName": {
                          "value": "[variables('udrName')]"
+                    },
+                    "deployIntoExistingVnet": {
+                        "value": "[parameters('deployIntoExistingVnet']"
                     }
                 }
             }
         },
-        {
+        {   "condition": "[equals(parameters('deployIntoExistingVnet'), 'No')]",
             "name": "SetupPublicLoadBalancer",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2015-01-01",

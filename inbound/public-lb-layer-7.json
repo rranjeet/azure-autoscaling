@@ -62,7 +62,7 @@
         "subnetRef": "[concat(variables('vnetID'),'/subnets/',parameters('subnetName'))]",
         "publicIPRef": "[resourceId('Microsoft.Network/publicIPAddresses',parameters('publicIPAddressName'))]",
         "applicationGatewayID": "[resourceId('Microsoft.Network/applicationGateways',variables('applicationGatewayName'))]",
-        "apiVersion": "2017-06-01"
+        "apiVersion": "2018-08-01"
     },
     "resources": [
         {
@@ -132,7 +132,11 @@
                         "properties": {
                             "Port": 80,
                             "Protocol": "Http",
-                            "CookieBasedAffinity": "Disabled"
+                            "CookieBasedAffinity": "Disabled",
+                            "connectionDraining": {
+                                "enabled": true,
+                                "drainTimeoutInSec": "300"
+                            }
                         }
                     }
                 ],
