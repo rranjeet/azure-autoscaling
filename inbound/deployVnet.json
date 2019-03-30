@@ -142,7 +142,7 @@
                 "addressPrefix": "[if(equals(parameters('subnet1Prefix'), 'None'), json('null'), parameters('subnet1Prefix'))]"
             }
         },
-        "trustSubnet"{
+        "trustSubnet": {
             "name": "[parameters('subnet2Name')]",
             "properties": {
                 "addressPrefix": "[if(equals(parameters('subnet2Prefix'), 'None'), json('null'), parameters('subnet2Prefix'))]"
