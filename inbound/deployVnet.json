@@ -172,7 +172,7 @@
             "condition": "[equals(parameters('deployIntoExistingVnet'), 'Yes')]",
             "apiVersion": "2018-04-01",
             "type": "Microsoft.Network/virtualNetworks/subnets",
-            "name": "[concat(variables('vnetame'), '/', parameters('subnet0Name'))]",
+            "name": "[concat(variables('vnetname'), '/', parameters('subnet0Name'))]",
             "location": "[variables('location')]",
             "properties": {
                 "addressPrefix": "[if(equals(parameters('subnet0Prefix'), 'None'), json('null'), parameters('subnet0Prefix'))]",
@@ -185,7 +185,7 @@
             "condition": "[equals(parameters('deployIntoExistingVnet'), 'Yes')]",
             "apiVersion": "2018-04-01",
             "type": "Microsoft.Network/virtualNetworks/subnets",
-            "name": "[concat(variables('vnetame'), '/', parameters('subnet1Name'))]",
+            "name": "[concat(variables('vnetname'), '/', parameters('subnet1Name'))]",
             "location": "[variables('location')]",
             "properties": {
                 "properties": {
@@ -197,7 +197,7 @@
             "condition": "[equals(parameters('deployIntoExistingVnet'), 'Yes')]",
             "apiVersion": "2018-04-01",
             "type": "Microsoft.Network/virtualNetworks/subnets",
-            "name": "[concat(variables('vnetame'), '/', parameters('subnet2Name'))]",
+            "name": "[concat(variables('vnetname'), '/', parameters('subnet2Name'))]",
             "location": "[variables('location')]",
             "properties": {
                 "properties": {
