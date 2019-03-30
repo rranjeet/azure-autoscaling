@@ -399,7 +399,7 @@
                          "value": "[variables('udrName')]"
                     },
                     "deployIntoExistingVnet": {
-                        "value": "[parameters('deployIntoExistingVnet']"
+                        "value": "[parameters('deployIntoExistingVnet')]"
                     }
                 }
             }
