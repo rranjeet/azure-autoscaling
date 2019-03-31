@@ -189,7 +189,10 @@
             "location": "[variables('location')]",
             "properties": {
                 "addressPrefix": "[if(equals(parameters('subnet1Prefix'), 'None'), json('null'), parameters('subnet1Prefix'))]"
-            }
+            },
+            "dependsOn": [
+                "[concat(variables('vnetname'), '/', parameters('subnet0Name'))]"
+            ]
         },
         {
             "condition": "[equals(parameters('deployIntoExistingVnet'), 'Yes')]",
@@ -199,7 +202,10 @@
             "location": "[variables('location')]",
             "properties": {
                 "addressPrefix": "[if(equals(parameters('subnet1Prefix'), 'None'), json('null'), parameters('subnet2Prefix'))]"
-            }
+            },
+            "dependsOn": [
+                "[concat(variables('vnetname'), '/', parameters('subnet1Name'))]"
+            ]
         }
     ],
     "outputs": {
