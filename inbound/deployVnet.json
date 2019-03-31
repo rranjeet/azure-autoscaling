@@ -189,6 +189,9 @@
             "location": "[variables('location')]",
             "properties": {
                 "addressPrefix": "[if(equals(parameters('subnet1Prefix'), 'None'), json('null'), parameters('subnet1Prefix'))]"
+            },
+            "dependsOn": {
+                "[resourceId(concat('Microsoft.Network/virtualNetworks/', variables('vnetname'), '/subnets/', parameters('subnet0Name')))]"
             }
         },
         {
@@ -199,6 +202,9 @@
             "location": "[variables('location')]",
             "properties": {
                 "addressPrefix": "[if(equals(parameters('subnet1Prefix'), 'None'), json('null'), parameters('subnet2Prefix'))]"
+            },
+            "dependsOn": {
+                "[resourceId(concat('Microsoft.Network/virtualNetworks/', variables('vnetname'), '/subnets/', parameters('subnet1Name')))]"
             }
         }
     ],
