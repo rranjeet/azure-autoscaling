@@ -125,29 +125,17 @@
                 "properties": {
                     "addressPrefix": "[if(equals(parameters('subnet2Prefix'), 'None'), json('null'), parameters('subnet2Prefix'))]"
                 }
-            }
-        ],
-        "mgmtSubnet":{
-            "name": "[parameters('subnet0Name')]",
-            "properties": {
-                "addressPrefix": "[if(equals(parameters('subnet0Prefix'), 'None'), json('null'), parameters('subnet0Prefix'))]",
-                "networkSecurityGroup": {
-                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsgName'))]"
+            },
+            {
+                "name": "[parameters('subnetLBName')]",
+                "properties": {
+                    "addressPrefix": "[parameters('subnetLBPrefix')]",
+                    "routeTable": {
+                        "id": "[resourceId('Microsoft.Network/routeTables', parameters('udrName'))]"
+                    }
                 }
             }
-        },
-        "untrustSubnet": {
-            "name": "[parameters('subnet1Name')]",
-            "properties": {
-                "addressPrefix": "[if(equals(parameters('subnet1Prefix'), 'None'), json('null'), parameters('subnet1Prefix'))]"
-            }
-        },
-        "trustSubnet": {
-            "name": "[parameters('subnet2Name')]",
-            "properties": {
-                "addressPrefix": "[if(equals(parameters('subnet2Prefix'), 'None'), json('null'), parameters('subnet2Prefix'))]"
-            }
-        }
+        ]
     },
     "resources": [
         {

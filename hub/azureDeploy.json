@@ -2,6 +2,17 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "deployIntoExistingVnet": {
+             "type": "string",
+             "defaultValue": "No",
+             "allowedValues": [
+                    "Yes",
+                    "No"
+             ],
+             "metadata": {
+                 "description": "If yes, then the template will deploy just the VM-Series firewall and not the app-gw."
+             }
+        },
         "virtualNetworkName": {
             "type": "string",
             "defaultValue": "hub-vnet",
@@ -314,7 +325,7 @@
                 },
                 "parameters": {
                     "nsgName": {
-                        "value": "[variables('networkSecurityGroupName')]"
+                        "value": "[reference('deployNsg').outputs.MgmtSubnetNsgName.value]"
                     },
                     "virtualNetworkName": {
                         "value": "[parameters('virtualNetworkName')]"
@@ -339,6 +350,9 @@
                     },
                     "trustSubnetPrefix": {
                         "value": "[parameters('trustSubnetPrefix')]"
+                    },
+                    "deployIntoExistingVnet": {
+                        "value": "[parameters('deployIntoExistingVnet')]"
                     }
                 }
             }
@@ -460,5 +474,27 @@
             }
         }
     ],
-    "outputs": {}
+    "outputs": {
+        "HubFwVnetName": {
+            "value": "[parameters('virtualNetworkName')]",
+            "type": "string"
+        },
+        "HubFwMgmtSubnetName": {
+            "value": "[variables('MgmtSubnetName')]",
+            "type": "string"
+        },
+        "HubFwUntrustSubnetName": {
+            "value": "[variables('untrustedSubnetName')]",
+            "type": "string"
+        },
+        "HubFwTrustSubnetName": {
+            "value": "[variables('trustedSubnetName')]",
+            "type": "string"
+        },
+        "HubFwLoadBalancerIP": {
+            "value": "[parameters('loadBalancerIP')]",
+            "type": "string"
+        }
+
+    }
 }
